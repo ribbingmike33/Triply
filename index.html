@@ -7,14 +7,16 @@
 
 <style>
 :root{
-  --navy:#17324d;
-  --ink:#1c2730;
-  --paper:#ffffff;
-  --page:#f5f6f7;
-  --line:#e1e5e8;
-  --muted:#6d7780;
-  --accent:#b8753d;
-  --green:#3f745c;
+  --navy:#3D2A78;
+  --ink:#27223A;
+  --paper:#FFFFFF;
+  --page:#F7F4FC;
+  --line:#E5DDF2;
+  --muted:#716B83;
+  --accent:#F4C84A;
+  --green:#4E75B8;
+  --blue:#4A90E2;
+  --yellow:#F4C84A;
 }
 *{box-sizing:border-box}
 body{
@@ -31,7 +33,7 @@ body{
   min-height:100vh;
 }
 header{
-  background:var(--navy);
+  background:linear-gradient(120deg,#3D2A78 0%,#6D4BC2 38%,#8B6FD1 62%,#4A90E2 100%);
   color:#fff;
   padding:34px 30px 26px;
 }
@@ -56,11 +58,11 @@ header{
 }
 .hero p{
   margin:0;
-  color:#d5dee5;
+  color:#EEE9FF;
   font-size:13px;
 }
 .home-pin{
-  background:#fff;
+  background:#FFF8D9;
   color:var(--navy);
   border:0;
   border-radius:7px;
@@ -83,13 +85,13 @@ nav{
   background:none;
   padding:15px 18px;
   font-weight:700;
-  color:#69737b;
+  color:#716B83;
   cursor:pointer;
   white-space:nowrap;
 }
 .tab.active{
   color:var(--navy);
-  box-shadow:inset 0 -2px var(--accent);
+  box-shadow:inset 0 -3px var(--accent);
 }
 main{padding:26px 28px 36px}
 .view{display:none}
@@ -116,7 +118,7 @@ main{padding:26px 28px 36px}
   margin:4px 0 14px;
 }
 .btn{
-  border:1px solid #cfd6db;
+  border:1px solid #D9D1E8;
   background:#fff;
   color:var(--navy);
   border-radius:7px;
@@ -138,7 +140,7 @@ main{padding:26px 28px 36px}
 .pill{
   display:inline-block;
   border-radius:5px;
-  background:#f0f2f3;
+  background:#F0EBF8;
   padding:5px 8px;
   font-size:11px;
   font-weight:750;
@@ -166,15 +168,15 @@ main{padding:26px 28px 36px}
 input,select,textarea{
   width:100%;
   padding:10px 11px;
-  border:1px solid #ccd4da;
+  border:1px solid #D9D1E8;
   border-radius:7px;
   background:#fff;
   font:inherit;
   outline:none;
 }
 input:focus,select:focus,textarea:focus{
-  border-color:#8394a2;
-  box-shadow:0 0 0 2px rgba(23,50,77,.08);
+  border-color:#8B6FD1;
+  box-shadow:0 0 0 2px rgba(109,75,194,.12);
 }
 label{
   font-size:12px;
@@ -235,16 +237,16 @@ label{
   cursor:pointer;
   border:2px solid transparent;
 }
-.theme.selected{border-color:#111}
-.classic{background:#19364f}
-.coastal{background:#287b8d}
-.sunset{background:#a94e42}
-.forest{background:#355b46}
-.midnight{background:#252633}
+.theme.selected{border-color:var(--yellow);box-shadow:0 0 0 2px rgba(245,200,75,.25)}
+.classic{background:linear-gradient(135deg,#3D2A78,#6D4BC2)}
+.coastal{background:linear-gradient(135deg,#4A90E2,#79C7E8)}
+.sunset{background:linear-gradient(135deg,#4A90E2 0%,#8064D8 38%,#B07AD4 62%,#F4C84A 100%)}
+.forest{background:linear-gradient(135deg,#315C55,#6FA38F)}
+.midnight{background:linear-gradient(135deg,#25234A,#49456F)}
 .modal{
   position:fixed;
   inset:0;
-  background:rgba(16,30,42,.42);
+  background:rgba(47,34,82,.38);
   display:none;
   align-items:center;
   justify-content:center;
@@ -266,7 +268,7 @@ label{
   bottom:20px;
   left:50%;
   transform:translateX(-50%);
-  background:#17212b;
+  background:#3D2A78;
   color:#fff;
   padding:10px 14px;
   border-radius:7px;
@@ -427,7 +429,7 @@ label{
 <div class="app">
 <header>
   <div class="hero">
-    <div><div class="eyebrow">YOUR TRIP</div><h1 id="tripTitle">Scotland 2027</h1><p id="tripMeta">Edinburgh • June 11–19, 2027</p></div>
+    <div><div class="eyebrow">YOUR TRIP</div><h1 id="tripTitle">Bachelorette Party 2027</h1><p id="tripMeta">Atlanta • June 11–19, 2027</p></div>
     <button class="home-pin" onclick="goHome()">Go Home</button>
   </div>
 </header>
@@ -444,10 +446,10 @@ label{
 <section id="home" class="view active">
   <div class="grid">
     <div class="card">
-      <div class="section-title"><div><span class="pill">NEXT UP</span><h2>Flight to Edinburgh</h2><div class="muted">Friday • June 11 • 7:45 PM</div></div></div>
-      <p class="muted">Detroit → Edinburgh</p><button class="btn primary" onclick="show('itinerary')">View Itinerary</button>
+      <div class="section-title"><div><span class="pill">NEXT UP</span><h2>Flight to Atlanta</h2><div class="muted">Friday • June 11 • 7:45 PM</div></div></div>
+      <p class="muted">Detroit → Atlanta</p><button class="btn primary" onclick="show('itinerary')">View Itinerary</button>
     </div>
-    <div class="card"><div class="section-title"><h3>Home Base</h3></div><strong>26 Dublin Street Lane South</strong><div class="muted">Edinburgh EH1 3PX</div><div class="actions"><button class="btn primary" onclick="goHome()">Go Home</button><button class="btn" onclick="show('places')">Find Places</button></div></div>
+    <div class="card"><div class="section-title"><h3>Home Base</h3></div><strong>3520 Peachtree Rd NE</strong><div class="muted">Atlanta, GA 30326</div><div class="actions"><button class="btn primary" onclick="goHome()">Go Home</button><button class="btn" onclick="show('places')">Find Places</button></div></div>
     <div class="card"><div class="section-title"><h3>Dues</h3><span class="pill">USD</span></div><div class="money negative">You owe $127.50</div><div class="muted">2 outstanding settlements</div><div class="actions"><button class="btn primary" onclick="show('dues')">Open Dues</button></div></div>
     <div class="card"><div class="section-title"><h3>People</h3><span class="pill">8 members</span></div><div class="muted">Mike, Sarah, John, Dave and 4 more</div><div class="actions"><button class="btn" onclick="show('people')">View People</button></div></div>
   </div>
@@ -469,7 +471,7 @@ label{
       <div class="itinerary-time">7:45 PM</div>
       <div class="itinerary-type">FLIGHT</div>
       <div class="itinerary-info">
-        <div class="itinerary-title">Detroit → Edinburgh</div>
+        <div class="itinerary-title">Detroit → Atlanta</div>
         <div class="itinerary-desc">Delta 208 · Confirmation ABC123</div>
       </div>
       <button class="btn small" onclick="editToast()">Edit</button>
@@ -482,7 +484,7 @@ label{
       <div class="itinerary-time">10:25 AM</div>
       <div class="itinerary-type">ARRIVAL</div>
       <div class="itinerary-info">
-        <div class="itinerary-title">Arrive in Edinburgh</div>
+        <div class="itinerary-title">Arrive in Atlanta</div>
         <div class="itinerary-desc">Everyone's arrival</div>
       </div>
       <button class="btn small" onclick="editToast()">Edit</button>
@@ -492,7 +494,7 @@ label{
       <div class="itinerary-time">7:30 PM</div>
       <div class="itinerary-type">DINNER</div>
       <div class="itinerary-info">
-        <div class="itinerary-title">The Scran & Scallie</div>
+        <div class="itinerary-title">Atlanta Dinner</div>
         <div class="itinerary-desc">Restaurant reservation · 8 people · Confirmation 12345</div>
       </div>
       <button class="btn small" onclick="editToast()">Edit</button>
@@ -505,7 +507,7 @@ label{
       <div class="itinerary-time">—</div>
       <div class="itinerary-type">ACTIVITY</div>
       <div class="itinerary-info">
-        <div class="itinerary-title">Edinburgh Castle</div>
+        <div class="itinerary-title">Group Activity</div>
         <div class="itinerary-desc">Time not set yet</div>
       </div>
       <button class="btn small" onclick="editToast()">Edit</button>
@@ -555,15 +557,15 @@ label{
 </section>
 
 <section id="settings" class="view">
-  <div class="section-title"><div><span class="eyebrow">TRIP SETTINGS</span><h2>Scotland 2027</h2></div></div>
+  <div class="section-title"><div><span class="eyebrow">TRIP SETTINGS</span><h2>Bachelorette Party 2027</h2></div></div>
   <div class="card"><div class="formgrid">
-    <div><label>Trip Name</label><input value="Scotland 2027"></div><div><label>Destination</label><input value="Edinburgh, Scotland"></div>
+    <div><label>Trip Name</label><input value="Bachelorette Party 2027"></div><div><label>Destination</label><input value="Atlanta, Georgia"></div>
     <div><label>Start Date</label><input type="date" value="2027-06-11"></div><div><label>End Date</label><input type="date" value="2027-06-19"></div>
-    <div class="full"><label>Home Base</label><input value="26 Dublin Street Lane South, Edinburgh EH1 3PX"></div>
+    <div class="full"><label>Home Base</label><input value="3520 Peachtree Rd NE, Atlanta, GA 30326"></div>
     <div><label>Currency</label><select><option>USD — US Dollar</option><option>GBP — British Pound</option><option>EUR — Euro</option></select></div>
   </div></div>
   <div class="card" style="margin-top:18px"><h3>Choose a Theme</h3><div class="muted" style="margin-bottom:12px">The theme applies to this trip only.</div>
-    <div class="theme-grid"><div class="theme classic selected" onclick="theme(this)"><b>Classic</b><span>Timeless</span></div><div class="theme coastal" onclick="theme(this)"><b>Coastal</b><span>Relaxed</span></div><div class="theme sunset" onclick="theme(this)"><b>Sunset</b><span>Warm</span></div><div class="theme forest" onclick="theme(this)"><b>Forest</b><span>Adventure</span></div><div class="theme midnight" onclick="theme(this)"><b>Midnight</b><span>Modern</span></div></div>
+    <div class="theme-grid"><div class="theme classic" onclick="theme(this)"><b>Classic</b><span>Timeless</span></div><div class="theme coastal" onclick="theme(this)"><b>Coastal</b><span>Relaxed</span></div><div class="theme sunset selected" onclick="theme(this)"><b>Sunset</b><span>Warm</span></div><div class="theme forest" onclick="theme(this)"><b>Forest</b><span>Adventure</span></div><div class="theme midnight" onclick="theme(this)"><b>Midnight</b><span>Modern</span></div></div>
   </div>
 </section>
 </main>
@@ -581,7 +583,7 @@ const tabs=document.querySelectorAll('.tab'),views=document.querySelectorAll('.v
 function show(id){tabs.forEach(t=>t.classList.toggle('active',t.dataset.view===id));views.forEach(v=>v.classList.toggle('active',v.id===id));window.scrollTo(0,0)}
 tabs.forEach(t=>t.onclick=()=>show(t.dataset.view));
 function toast(msg){const x=document.getElementById('toast');x.textContent=msg;x.style.display='block';setTimeout(()=>x.style.display='none',2200)}
-function goHome(){window.open('https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=26+Dublin+Street+Lane+South%2C+Edinburgh+EH1+3PX&travelmode=driving','_blank')}
+function goHome(){window.open('https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=3520+Peachtree+Rd+NE%2C+Atlanta%2C+GA+30326&travelmode=driving','_blank')}
 function openModal(id){document.getElementById(id).classList.add('open')}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
 function selectAll(){document.querySelectorAll('#purchasePeople input').forEach(x=>x.checked=true);toast('All participants selected')}
@@ -595,7 +597,7 @@ function theme(el){document.querySelectorAll('.theme').forEach(x=>x.classList.re
 function searchPlaces(){
  const type=document.getElementById('placeType').value, mode=document.getElementById('travelMode').value, range=document.getElementById('range').value;
  const prices=[...document.querySelectorAll('.price:checked')].map(x=>x.value);
- const names=type==='Restaurants'?['The Scran & Scallie','Dishoom Edinburgh','Timberyard','Civerinos Slice','The Palmerston','Fhior','Noto','Locanda de Gusti','Aizle','Howies']:['The Jolly Judge','The Bow Bar','Bramble Bar','The Hanging Bat','The Devil’s Advocate','Panda & Sons','Teuchters Landing','Salt Horse','The Bon Vivant','The Ensign Ewart'];
+ const names=type==='Restaurants'?['South City Kitchen','The Iberian Pig','Buttermilk Kitchen','Superica','Canoe','Barcelona Wine Bar','Ponce City Market','Rumi’s Kitchen','The Optimist','Bulla Gastrobar']:['SkyLounge','The Roof at Ponce City Market','9 Mile Station','Ladybird','Polaris','Drawbar','Rooftop L.O.A.','Red Phone Booth','Tiny Lou’s','JoJo’s Beloved Cocktail Lounge'];
  document.getElementById('placesResults').innerHTML=names.map((n,i)=>{const p=['$','$$','$$$'][i%3];return prices.includes(p)?`<div class="place"><div class="row"><span class="pill">${p}</span><span class="stars">★ ${(4.2+(i%7)/10).toFixed(1)}</span></div><h3>${n}</h3><div class="muted">${i+1}. ${mode.toLowerCase()} • ${Math.max(1,Math.min(15,Math.ceil((i+1)/2)))} min from Home Base</div><div class="actions"><button class="btn" onclick="toast('Directions opened')">Directions</button><button class="btn" onclick="toast('Saved to trip')">Save</button></div></div>`:''}).join('') || '<div class="card">Choose at least one price range.</div>';
 }
 searchPlaces();
