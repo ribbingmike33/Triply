@@ -447,8 +447,6 @@ label{
 .itinerary-day .day-label{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:17px 0 13px;border-bottom:1px solid var(--line);font-size:13px;font-weight:850;letter-spacing:.12em;color:var(--navy)}
 .day-toggle{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:800;white-space:nowrap}
 .itinerary-day:not([open]) .day-label{border-bottom:0}
-.itinerary-day:not([open]) .day-toggle{font-size:0}
-.itinerary-day:not([open]) .day-toggle:after{content:'Show';font-size:11px}
 .itinerary-row{display:grid;grid-template-columns:76px 76px minmax(0,1fr) auto;gap:13px;align-items:center;padding:15px 0;border-bottom:1px solid var(--line)}
 .itinerary-row:last-child{border-bottom:0}
 .itinerary-time{font-size:14px;font-weight:800;color:var(--navy)}
@@ -466,6 +464,36 @@ label{
 }
 </style>
 
+
+<style>
+/* Final UI refinements */
+.btn,.home-pin{border-radius:10px;transition:all .15s ease;box-shadow:none}
+.btn{padding:10px 14px;font-weight:700}
+.btn.primary{border-radius:11px}
+.btn.success{border-radius:11px}
+#dues .card{padding:24px}
+#dues .section-title h2{font-size:30px}
+#dues h3{font-size:20px}
+#dues .money{font-size:38px}
+#dues .muted{font-size:14px}
+#dues .item strong{font-size:20px}
+#dues .item .muted{font-size:15px}
+.price-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.price-check{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:8px 12px;border-radius:9px;background:#fff;font-size:13px;font-weight:700;margin:0;cursor:pointer}
+.price-check input{width:auto;margin:0}
+.price-check span{font-weight:850;color:var(--navy)}
+.itinerary-day .day-label{position:relative;padding-right:38px}
+.itinerary-day .day-toggle{position:absolute;right:2px;top:50%;width:18px;height:18px;transform:translateY(-50%);font-size:0}
+.itinerary-day .day-toggle:after{content:'⌄';font-size:22px;line-height:18px;color:var(--navy);display:block;transition:transform .15s ease}
+.itinerary-day[open] .day-toggle:after{transform:rotate(180deg)}
+.itinerary-day .day-label{border-bottom:1px solid var(--line)}
+.place .actions .btn,.place .actions a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+@media(max-width:650px){
+ .price-options{gap:6px}
+ .price-check{padding:7px 9px;font-size:12px}
+ #dues .card{padding:20px}
+}
+</style>
 </head>
 <body>
 <div class="app">
@@ -508,7 +536,7 @@ label{
   </div>
 
   <details class="card itinerary-day" open>
-    <summary class="day-label"><span>FRIDAY · JUNE 11</span><span class="day-toggle">Hide</span></summary>
+    <summary class="day-label"><span>FRIDAY · JUNE 11</span><span class="day-toggle" aria-hidden="true"></span></summary>
     <div class="itinerary-row">
       <div class="itinerary-time">7:45 PM</div>
       <div class="itinerary-type">Flight</div>
@@ -521,7 +549,7 @@ label{
   </details>
 
   <details class="card itinerary-day" open>
-    <summary class="day-label"><span>SATURDAY · JUNE 12</span><span class="day-toggle">Hide</span></summary>
+    <summary class="day-label"><span>SATURDAY · JUNE 12</span><span class="day-toggle" aria-hidden="true"></span></summary>
     <div class="itinerary-row">
       <div class="itinerary-time">10:25 AM</div>
       <div class="itinerary-type">Arrival</div>
@@ -543,7 +571,7 @@ label{
   </details>
 
   <details class="card itinerary-day">
-    <summary class="day-label"><span>SUNDAY · JUNE 13</span><span class="day-toggle">Show</span></summary>
+    <summary class="day-label"><span>SUNDAY · JUNE 13</span><span class="day-toggle" aria-hidden="true"></span></summary>
     <div class="itinerary-row">
       <div class="itinerary-time">—</div>
       <div class="itinerary-type">Activity</div>
@@ -560,7 +588,6 @@ label{
   <div class="section-title"><div><span class="eyebrow">SHARED EXPENSES</span><h2>Dues</h2><div class="muted">Currency: USD</div></div><button class="btn primary" onclick="openModal('purchaseModal')">Log Purchase</button></div>
   <div class="grid">
     <div class="card"><h3>Your Balance</h3><div class="money negative">$127.50 owed</div><div class="muted">After recorded settlements</div></div>
-    <div class="card"><h3>Group Status</h3><div class="money positive">$0.00 unresolved group difference</div><div class="muted">All purchases included</div></div>
   </div>
   <div class="card" style="margin-top:18px"><div class="section-title"><h3>Who You Owe</h3></div>
     <div class="list">
@@ -592,7 +619,7 @@ label{
       <select id="range"><option>5 minutes</option><option>10 minutes</option><option>15 minutes</option></select>
       <button class="btn primary" onclick="searchPlaces()">Find Places</button>
     </div>
-    <label>Price range</label><div class="checkgrid"><label class="check"><input type="checkbox" class="price" value="$" checked> $ Budget</label><label class="check"><input type="checkbox" class="price" value="$$" checked> $$ Moderate</label><label class="check"><input type="checkbox" class="price" value="$$$"> $$$ Upscale</label></div>
+    <label>Price range</label><div class="price-options"><label class="price-check"><input type="checkbox" class="price" value="$" checked><span>$</span> Budget</label><label class="price-check"><input type="checkbox" class="price" value="$$" checked><span>$$</span> Moderate</label><label class="price-check"><input type="checkbox" class="price" value="$$$"><span>$$$</span> Upscale</label></div>
   </div>
   <div id="placesResults" class="place-grid" style="margin-top:16px"></div>
 </section>
@@ -639,8 +666,17 @@ function openWebsite(name){window.open('https://www.google.com/search?q='+name+'
 function searchPlaces(){
  const type=document.getElementById('placeType').value, mode=document.getElementById('travelMode').value, range=document.getElementById('range').value;
  const prices=[...document.querySelectorAll('.price:checked')].map(x=>x.value);
- const names=type==='Restaurants'?['South City Kitchen','The Iberian Pig','Buttermilk Kitchen','Superica','Canoe','Barcelona Wine Bar','Ponce City Market','Rumi’s Kitchen','The Optimist','Bulla Gastrobar']:['SkyLounge','The Roof at Ponce City Market','9 Mile Station','Ladybird','Polaris','Drawbar','Rooftop L.O.A.','Red Phone Booth','Tiny Lou’s','JoJo’s Beloved Cocktail Lounge'];
- document.getElementById('placesResults').innerHTML=names.map((n,i)=>{const p=['$','$$','$$$'][i%3];return prices.includes(p)?`<div class="place"><div class="row"><span class="pill">${p}</span><span class="stars">★ ${(4.2+(i%7)/10).toFixed(1)}</span></div><h3>${n}</h3><div class="muted">${i+1}. ${mode.toLowerCase()} • ${Math.max(1,Math.min(15,Math.ceil((i+1)/2)))} min from Home Base</div><div class="actions"><button class="btn" onclick="toast('Directions opened')">Directions</button><button class="btn" onclick="openWebsite(${JSON.stringify(n)})">Website</button><button class="btn" onclick="toast('Saved to trip')">Save</button></div></div>`:''}).join('') || '<div class="card">Choose at least one price range.</div>';
+ const restaurants=[
+  ['South City Kitchen','404-873-7358'],['The Iberian Pig','404-371-8800'],['Buttermilk Kitchen','678-732-3274'],['Superica','404-961-3355'],['Canoe','770-432-2663'],['Barcelona Wine Bar','404-565-4520'],['Ponce City Market','404-900-7900'],['Rumi’s Kitchen','404-477-2100'],['The Optimist','404-477-6260'],['Bulla Gastrobar','404-500-0506']
+ ];
+ const bars=[
+  ['SkyLounge','404-487-3500'],['The Roof at Ponce City Market','404-454-3426'],['9 Mile Station','404-347-5290'],['Ladybird','404-500-5396'],['Polaris','404-745-5745'],['Drawbar','404-523-3500'],['Rooftop L.O.A.','404-500-8256'],['Red Phone Booth','404-766-7187'],['Tiny Lou’s','404-500-4050'],['JoJo’s Beloved Cocktail Lounge','404-500-5699']
+ ];
+ const places=type==='Restaurants'?restaurants:bars;
+ document.getElementById('placesResults').innerHTML=places.map((item,i)=>{
+   const n=item[0], phone=item[1], p=['$','$$','$$$'][i%3];
+   return prices.includes(p)?`<div class="place"><div class="row"><span class="pill">${p}</span><span class="stars">★ ${(4.2+(i%7)/10).toFixed(1)}</span></div><h3>${n}</h3><div class="muted">${i+1}. ${mode.toLowerCase()} • ${Math.max(1,Math.min(15,Math.ceil((i+1)/2)))} min from Home Base</div><div class="actions"><button class="btn" onclick="toast('Directions opened')">Directions</button><a class="btn" href="tel:${phone.replace(/[^0-9+]/g,'')}">Call</a><button class="btn" onclick="openWebsite(${JSON.stringify(n)})">Website</button><button class="btn" onclick="toast('Saved to trip')">Save</button></div></div>`:''
+ }).join('') || '<div class="card">Choose at least one price range.</div>';
 }
 searchPlaces();
 </script>
