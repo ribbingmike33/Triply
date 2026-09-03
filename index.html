@@ -282,7 +282,69 @@ label{
   .home-pin{margin-top:4px}
   .place-grid{grid-template-columns:1fr}
   .filters{grid-template-columns:1fr 1fr}
+  .itinerary-head{align-items:flex-start}
+  .itinerary-day{padding:14px}
+  .itinerary-item{grid-template-columns:58px 34px 1fr auto;gap:10px}
+  .itinerary-edit{padding:7px 9px;font-size:11px}
 }
+
+/* Itinerary: simple day-by-day layout inspired by the original trip app */
+.itinerary-head{align-items:flex-end}
+.itinerary-day{
+  border:1px solid var(--line);
+  border-radius:13px;
+  background:#fff;
+  padding:15px;
+  margin-bottom:11px;
+}
+.itinerary-day-label{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.itinerary-day-label .date{
+  font-size:10px;
+  font-weight:900;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+.itinerary-day-label .day-note{
+  font-size:10px;
+  font-weight:800;
+  color:var(--blue);
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+.itinerary-item{
+  display:grid;
+  grid-template-columns:68px 34px 1fr auto;
+  align-items:center;
+  gap:13px;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
+}
+.itinerary-item:last-child{border-bottom:0;padding-bottom:2px}
+.itinerary-time{
+  font-size:12px;
+  font-weight:900;
+  color:var(--blue);
+}
+.itinerary-type{
+  width:34px;height:34px;border-radius:9px;
+  background:#f3f6f8;
+  border:1px solid #e0e6ea;
+  display:flex;align-items:center;justify-content:center;
+  font-size:9px;font-weight:900;color:var(--navy);
+  letter-spacing:.04em;
+}
+.itinerary-title{font-weight:900;color:var(--navy);font-size:14px}
+.itinerary-desc{font-size:12px;color:var(--muted);margin-top:3px;line-height:1.35}
+.itinerary-edit{padding:7px 10px;font-size:11px;white-space:nowrap}
+.itinerary-unscheduled{color:var(--muted);font-style:italic}
+
 @media(max-width:430px){
   .hero{display:block}
   .home-pin{margin-top:14px}
@@ -291,6 +353,73 @@ label{
   .checkgrid{grid-template-columns:1fr}
   .theme-grid{grid-template-columns:1fr 1fr}
 }
+
+/* Triply itinerary: simple day-by-day schedule */
+.itinerary-day{
+  margin-bottom:14px;
+  padding:0 18px;
+}
+.day-label{
+  padding:15px 0 11px;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.14em;
+  color:var(--muted);
+  border-bottom:1px solid var(--line);
+}
+.itinerary-row{
+  display:grid;
+  grid-template-columns:78px 76px minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:14px 0;
+  border-bottom:1px solid var(--line);
+}
+.itinerary-row:last-child{border-bottom:0}
+.itinerary-time{
+  font-size:13px;
+  font-weight:750;
+  color:var(--navy);
+}
+.itinerary-type{
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.12em;
+  color:var(--muted);
+}
+.itinerary-info{min-width:0}
+.itinerary-title{
+  font-weight:750;
+  color:var(--ink);
+  line-height:1.3;
+}
+.itinerary-desc{
+  margin-top:3px;
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.4;
+}
+@media(max-width:650px){
+  .itinerary-day{padding:0 14px}
+  .itinerary-row{
+    grid-template-columns:62px 1fr auto;
+    gap:10px;
+  }
+  .itinerary-type{
+    grid-column:2;
+    grid-row:1;
+    margin-bottom:-5px;
+  }
+  .itinerary-info{
+    grid-column:2;
+    grid-row:2;
+  }
+  .itinerary-row > .btn{
+    grid-column:3;
+    grid-row:1 / span 2;
+  }
+}
+
 </style>
 
 </head>
@@ -325,11 +454,62 @@ label{
 </section>
 
 <section id="itinerary" class="view">
-  <div class="section-title"><div><span class="eyebrow">SHARED SCHEDULE</span><h2>Itinerary</h2></div><button class="btn primary" onclick="openModal('eventModal')">+ Add to Itinerary</button></div>
-  <div class="timeline">
-    <div class="day"><div class="dayhead"><span>FRI • JUNE 11</span><span>TRAVEL</span></div><div class="event"><div class="time">7:45 PM</div><div><strong>Delta 208</strong><div class="muted">Detroit → Edinburgh • Confirmation ABC123</div></div><button class="btn" onclick="editToast()">Edit</button></div></div>
-    <div class="day"><div class="dayhead"><span>SAT • JUNE 12</span><span>ARRIVAL</span></div><div class="event"><div class="time">10:25 AM</div><div><strong>Arrive in Edinburgh</strong><div class="muted">Everyone’s arrival</div></div><button class="btn" onclick="editToast()">Edit</button></div><div class="event"><div class="time">7:30 PM</div><div><strong>Restaurant Dinner — The Scran & Scallie</strong><div class="muted">Reservation for 8 • Confirmation 12345</div></div><button class="btn" onclick="editToast()">Edit</button></div></div>
-    <div class="day"><div class="dayhead"><span>SUN • JUNE 13</span><span>UNSCHEDULED</span></div><div class="event"><div class="time">—</div><div><strong>Edinburgh Castle Edinburgh Castle</strong><div class="muted">Time not set yet</div></div><button class="btn" onclick="editToast()">Edit</button></div></div>
+  <div class="section-title">
+    <div>
+      <span class="eyebrow">SHARED SCHEDULE</span>
+      <h2>Itinerary</h2>
+      <div class="muted">Shared by the whole group.</div>
+    </div>
+    <button class="btn primary" onclick="openModal('eventModal')">+ Add</button>
+  </div>
+
+  <div class="card itinerary-day">
+    <div class="day-label">FRIDAY · JUNE 11</div>
+    <div class="itinerary-row">
+      <div class="itinerary-time">7:45 PM</div>
+      <div class="itinerary-type">FLIGHT</div>
+      <div class="itinerary-info">
+        <div class="itinerary-title">Detroit → Edinburgh</div>
+        <div class="itinerary-desc">Delta 208 · Confirmation ABC123</div>
+      </div>
+      <button class="btn small" onclick="editToast()">Edit</button>
+    </div>
+  </div>
+
+  <div class="card itinerary-day">
+    <div class="day-label">SATURDAY · JUNE 12</div>
+    <div class="itinerary-row">
+      <div class="itinerary-time">10:25 AM</div>
+      <div class="itinerary-type">ARRIVAL</div>
+      <div class="itinerary-info">
+        <div class="itinerary-title">Arrive in Edinburgh</div>
+        <div class="itinerary-desc">Everyone's arrival</div>
+      </div>
+      <button class="btn small" onclick="editToast()">Edit</button>
+    </div>
+
+    <div class="itinerary-row">
+      <div class="itinerary-time">7:30 PM</div>
+      <div class="itinerary-type">DINNER</div>
+      <div class="itinerary-info">
+        <div class="itinerary-title">The Scran & Scallie</div>
+        <div class="itinerary-desc">Restaurant reservation · 8 people · Confirmation 12345</div>
+      </div>
+      <button class="btn small" onclick="editToast()">Edit</button>
+    </div>
+  </div>
+
+  <div class="card itinerary-day">
+    <div class="day-label">SUNDAY · JUNE 13</div>
+    <div class="itinerary-row">
+      <div class="itinerary-time">—</div>
+      <div class="itinerary-type">ACTIVITY</div>
+      <div class="itinerary-info">
+        <div class="itinerary-title">Edinburgh Castle</div>
+        <div class="itinerary-desc">Time not set yet</div>
+      </div>
+      <button class="btn small" onclick="editToast()">Edit</button>
+    </div>
   </div>
 </section>
 
