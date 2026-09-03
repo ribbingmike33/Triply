@@ -666,7 +666,7 @@ label{font-size:12px;font-weight:750;color:var(--ink)}
 
 <div class="modal" id="purchaseModal"><div class="modalbox"><div class="section-title"><h2>Log Purchase</h2><button class="btn" onclick="closeModal('purchaseModal')">Close</button></div><label>What was it for?</label><input placeholder="Dinner, taxi, hotel..."><label>Amount</label><input type="number" placeholder="0.00"><label>Who paid?</label><select><option>Mike Ribbing</option><option>Sarah Johnson</option><option>John Smith</option></select><div class="row" style="margin-top:14px"><b>Who was in on it?</b><button class="btn" onclick="selectAll()">Select All</button></div><div class="checkgrid" id="purchasePeople"><label class="check"><input type="checkbox"> Mike</label><label class="check"><input type="checkbox"> Sarah</label><label class="check"><input type="checkbox"> John</label><label class="check"><input type="checkbox"> Dave</label></div><button class="btn primary" style="margin-top:16px;width:100%" onclick="savePurchase()">Log Purchase</button></div></div>
 
-<div class="modal" id="eventModal"><div class="modalbox"><div class="section-title"><h2>Add to Itinerary</h2><button class="btn" onclick="closeModal('eventModal')">Close</button></div><label>Type</label><select id="eventType"><option>Restaurant</option><option>Flight</option><option>Hotel</option><option>Activity</option><option>Transportation</option><option>Reservation</option><option>Other</option></select><label>Title</label><input id="eventTitle" placeholder="What's happening?"><div class="formgrid"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Start Time</label><input id="eventTime" type="time"></div></div><label>Location</label><input id="eventLocation" placeholder="Address or venue"><label>Website</label><input id="eventWebsite" placeholder="Website link"><label>Confirmation / Notes</label><textarea id="eventNotes" rows="3"></textarea><button class="btn primary" style="margin-top:16px;width:100%" onclick="saveEvent()">Add to Itinerary</button></div></div>
+<div class="modal" id="eventModal"><div class="modalbox"><div class="section-title"><h2 id="eventModalTitle">Add to Itinerary</h2><button class="btn" onclick="closeModal('eventModal')">Close</button></div><label>Type</label><select id="eventType" onchange="updateEventFields()"><option>Restaurant</option><option>Flight</option><option>Hotel</option><option>Activity</option><option>Transportation</option><option>Reservation</option><option>Other</option></select><label>Title</label><input id="eventTitle" placeholder="What's happening?"><div class="formgrid"><div><label>Date</label><input id="eventDate" type="date"></div><div><label>Start Time</label><input id="eventTime" type="time"></div></div><div id="restaurantFields"><label>Number of People</label><input id="eventPeople" type="number" min="1" step="1" placeholder="How many people?"><label>Confirmation Number <span class="muted small">(optional)</span></label><input id="eventConfirmation" placeholder="Confirmation number"></div><div id="generalEventFields"><label>Location</label><input id="eventLocation" placeholder="Address or venue"><label>Website</label><input id="eventWebsite" placeholder="Website link"><label>Notes</label><textarea id="eventNotes" rows="3"></textarea></div><button class="btn primary" style="margin-top:16px;width:100%" onclick="saveEvent()">Add to Itinerary</button></div></div>
 <div class="modal" id="inviteModal"><div class="modalbox"><div class="section-title"><h2>Invite People</h2><button class="btn" onclick="closeModal('inviteModal')">Close</button></div><label>Name</label><input placeholder="Their name"><label>Phone number</label><input type="tel" placeholder="(555) 555-5555"><div class="muted small" style="margin-top:8px">The invitation will be sent by text message. Phone number is required.</div><button class="btn primary" style="margin-top:16px;width:100%" onclick="sendInvite()">Send Text Invite</button></div></div>
 <div class="toast" id="toast"></div>
 
@@ -685,31 +685,24 @@ function saveEvent(){
  const title=document.getElementById('eventTitle').value.trim();
  const date=document.getElementById('eventDate').value;
  const time=document.getElementById('eventTime').value;
- const location=document.getElementById('eventLocation').value.trim();
- const website=document.getElementById('eventWebsite').value.trim();
- const notes=document.getElementById('eventNotes').value.trim();
- if(!title || !date){toast('Add a title and date first');return}
- const d=new Date(date+'T00:00:00');
- const dayNames=['SUNDAY','MONDAY','TUESDAY','WEDNESDAY','THURSDAY','FRIDAY','SATURDAY'];
- const monthNames=['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
- const label=dayNames[d.getDay()]+' · '+monthNames[d.getMonth()]+' '+d.getDate();
- let details=[...document.querySelectorAll('#itinerary details')].find(x=>x.querySelector('.day-label span:first-child')?.textContent.trim()===label);
- if(!details){
-   details=document.createElement('details'); details.className='card itinerary-day';
-   details.open=true;
-   details.innerHTML='<summary class="day-label"><span>'+label+'</span><span class="day-toggle" aria-hidden="true"></span></summary>';
-   document.getElementById('itinerary').appendChild(details);
+ if(!title||!date){toast('Please enter a title and date');return}
+ const dayLabel=new Date(date+'T12:00:00').toLocaleDateString('en-US',{weekday:'short',month:'long',day:'numeric'}).toUpperCase();
+ const people=type==='Restaurant'?document.getElementById('eventPeople').value.trim():'';
+ const confirmation=type==='Restaurant'?document.getElementById('eventConfirmation').value.trim():'';
+ const location=type==='Restaurant'?'Atlanta, GA':document.getElementById('eventLocation').value.trim();
+ const website=type==='Restaurant'?'':document.getElementById('eventWebsite').value.trim();
+ const notes=type==='Restaurant'?'':document.getElementById('eventNotes').value.trim();
+ let day=[...document.querySelectorAll('.itinerary-day')].find(d=>d.dataset.date===date);
+ if(!day){
+  day=document.createElement('details'); day.className='card itinerary-day'; day.dataset.date=date; day.open=true;
+  day.innerHTML='<summary class="day-label"><strong>'+dayLabel+'</strong><span class="arrow">⌄</span></summary><div class="day-events"></div>';
+  document.querySelector('#itinerary .itinerary-list').appendChild(day);
  }
  const row=document.createElement('div'); row.className='itinerary-row';
- const displayTime=time?new Date('2000-01-01T'+time).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}):'—';
- const desc=[location,notes,website?'Website included':''].filter(Boolean).join(' · ') || 'Added from Places';
- row.innerHTML='<div class="itinerary-time">'+displayTime+'</div><div class="itinerary-type">'+type+'</div><div class="itinerary-info"><div class="itinerary-title"></div><div class="itinerary-desc"></div></div><button class="btn small" onclick="editToast()">Edit</button>';
- row.querySelector('.itinerary-title').textContent=title;
- row.querySelector('.itinerary-desc').textContent=desc;
- details.appendChild(row);
- closeModal('eventModal');
- show('itinerary');
- toast(title+' added to itinerary');
+ const details=[location,people?(people+' people'):'' ,confirmation?('Confirmation '+confirmation):'',notes].filter(Boolean).join(' • ');
+ row.innerHTML='<div class="itinerary-time">'+(time?new Date('2000-01-01T'+time).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}):'No time')+'</div><div class="itinerary-main"><div><span class="itinerary-type">'+type+'</span> <strong>'+title+'</strong></div><div class="muted">'+details+'</div></div><button class="btn" onclick="editToast()">Edit</button>';
+ day.querySelector('.day-events').appendChild(row);
+ closeModal('eventModal');show('itinerary');toast(title+' added to itinerary');
 }
 function sendInvite(){closeModal('inviteModal');toast('Text invitation sent')}
 function editToast(){toast('Edit mode opened')}
@@ -717,14 +710,23 @@ function pay(name,amt){toast('Opening payment for '+name+' — $'+amt.toFixed(2)
 function markPaid(btn,name,amt){btn.disabled=true;btn.textContent='Paid';btn.previousElementSibling?.remove();toast(name+' marked paid — $'+amt.toFixed(2))}
 function theme(el){document.querySelectorAll('.theme').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');toast(el.querySelector('b').textContent+' theme selected')}
 function openWebsite(name){window.open('https://www.google.com/search?q='+name+'+Atlanta+official+website','_blank')}
+function updateEventFields(){
+ const isRestaurant=document.getElementById('eventType').value==='Restaurant';
+ document.getElementById('restaurantFields').style.display=isRestaurant?'block':'none';
+ document.getElementById('generalEventFields').style.display=isRestaurant?'none':'block';
+ document.getElementById('eventModalTitle').textContent=isRestaurant?'Add Restaurant to Itinerary':'Add to Itinerary';
+}
 function addRestaurantToItinerary(name,phone){
  document.getElementById('eventType').value='Restaurant';
  document.getElementById('eventTitle').value=name;
  document.getElementById('eventDate').value='';
  document.getElementById('eventTime').value='';
+ document.getElementById('eventPeople').value='';
+ document.getElementById('eventConfirmation').value='';
  document.getElementById('eventLocation').value='Atlanta, GA';
  document.getElementById('eventWebsite').value='';
  document.getElementById('eventNotes').value='Phone: '+phone;
+ updateEventFields();
  openModal('eventModal');
 }
 function searchPlaces(){
