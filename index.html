@@ -490,10 +490,10 @@ label{
 #dues .muted{font-size:14px}
 #dues .item strong{font-size:20px}
 #dues .item .muted{font-size:15px}
-.price-options{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.price-check{display:flex;align-items:center;gap:7px;border:1px solid var(--line);padding:8px 12px;border-radius:9px;background:#fff;font-size:13px;font-weight:700;margin:0;cursor:pointer}
-.price-check input{width:auto;margin:0}
-.price-check span{font-weight:850;color:var(--navy)}
+.price-options{display:flex;gap:8px;margin-top:8px}
+.price-btn{min-width:48px;border:1px solid var(--line);padding:9px 14px;border-radius:10px;background:#fff;color:var(--navy);font-size:13px;font-weight:850;cursor:pointer;transition:.15s ease}
+.price-btn.active{background:var(--purple);border-color:var(--purple);color:#fff}
+.price-btn:hover{transform:translateY(-1px)}
 .itinerary-day .day-label{position:relative;padding-right:38px}
 .itinerary-day .day-toggle{position:absolute;right:2px;top:50%;width:18px;height:18px;transform:translateY(-50%);font-size:0}
 .itinerary-day .day-toggle:after{content:'⌄';font-size:22px;line-height:18px;color:var(--navy);display:block;transition:transform .15s ease}
@@ -502,7 +502,7 @@ label{
 .place .actions .btn,.place .actions a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 @media(max-width:650px){
  .price-options{gap:6px}
- .price-check{padding:7px 9px;font-size:12px}
+ .price-btn{padding:8px 14px;font-size:13px}
  #dues .card{padding:20px}
 }
 
@@ -644,7 +644,7 @@ label{font-size:12px;font-weight:750;color:var(--ink)}
       <select id="range"><option>5 minutes</option><option>10 minutes</option><option>15 minutes</option></select>
       <button class="btn primary" onclick="searchPlaces()">Find Places</button>
     </div>
-    <label>Price range</label><div class="price-options"><label class="price-check"><input type="checkbox" class="price" value="$" checked><span>$</span> Budget</label><label class="price-check"><input type="checkbox" class="price" value="$$" checked><span>$$</span> Moderate</label><label class="price-check"><input type="checkbox" class="price" value="$$$"><span>$$$</span> Upscale</label></div>
+    <label>Price range</label><div class="price-options" role="group" aria-label="Price range"><button type="button" class="price-btn active" data-price="$" onclick="togglePrice(this)">$</button><button type="button" class="price-btn active" data-price="$$" onclick="togglePrice(this)">$$</button><button type="button" class="price-btn" data-price="$$$" onclick="togglePrice(this)">$$$</button></div>
   </div>
   <div id="placesResults" class="place-grid" style="margin-top:16px"></div>
 </section>
@@ -729,9 +729,15 @@ function addRestaurantToItinerary(name,phone){
  updateEventFields();
  openModal('eventModal');
 }
+function togglePrice(btn){
+  btn.classList.toggle('active');
+  const active=[...document.querySelectorAll('.price-btn.active')];
+  if(!active.length) btn.classList.add('active');
+}
+
 function searchPlaces(){
  const type=document.getElementById('placeType').value, mode=document.getElementById('travelMode').value, range=document.getElementById('range').value;
- const prices=[...document.querySelectorAll('.price:checked')].map(x=>x.value);
+ const prices=[...document.querySelectorAll('.price-btn.active')].map(x=>x.dataset.price);
  const restaurants=[
   ['South City Kitchen','404-873-7358'],['The Iberian Pig','404-371-8800'],['Buttermilk Kitchen','678-732-3274'],['Superica','404-961-3355'],['Canoe','770-432-2663'],['Barcelona Wine Bar','404-565-4520'],['Ponce City Market','404-900-7900'],['Rumi’s Kitchen','404-477-2100'],['The Optimist','404-477-6260'],['Bulla Gastrobar','404-500-0506']
  ];
