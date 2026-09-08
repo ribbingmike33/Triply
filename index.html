@@ -612,17 +612,11 @@ label{font-size:12px;font-weight:750;color:var(--ink)}
 <section id="dues" class="view">
   <div class="section-title"><div><h2>Dues</h2><div class="muted">USD</div></div><button class="btn primary" onclick="openModal('purchaseModal')">Log Purchase</button></div>
   <div class="grid">
-    <div class="card"><h3>Your Balance</h3><div class="money negative">$127.50 owed</div><div class="muted">After recorded settlements</div></div>
+    <div class="card"><h3>Your Balance</h3><div class="money" id="yourBalanceAmount">$0.00</div><div class="muted" id="yourBalanceLabel">Even</div></div>
   </div>
-  <div class="card" style="margin-top:18px"><div class="section-title"><h3>Who You Owe</h3></div>
-    <div class="list">
-      <div class="item"><div class="row"><div><strong>Sarah</strong><div class="muted">$75.00</div></div><div class="actions"><button class="btn primary" onclick="pay('Sarah',75)">Pay $75</button><button class="btn success" onclick="markPaid(this,'Sarah',75)">Mark Paid</button></div></div></div>
-      <div class="item"><div class="row"><div><strong>John</strong><div class="muted">$52.50</div></div><div class="actions"><button class="btn primary" onclick="pay('John',52.5)">Pay $52.50</button><button class="btn success" onclick="markPaid(this,'John',52.5)">Mark Paid</button></div></div></div>
-    </div>
-  </div>
-  <div class="card" style="margin-top:18px"><div class="section-title"><h3>Purchases</h3></div>
-    <div class="list"><div class="item"><strong>Rental car</strong><div class="muted">$320.00 • Paid by Mike • Mike, Sarah, John, Dave</div></div><div class="item"><strong>Dinner</strong><div class="muted">$180.00 • Paid by Sarah • 6 people</div></div></div>
-  </div>
+  <div class="card" style="margin-top:18px"><div class="section-title"><h3>Who You Owe</h3></div><div class="list" id="whoYouOweList"></div></div>
+  <div class="card" style="margin-top:18px"><div class="section-title"><h3>Who Owes You</h3></div><div class="list" id="whoOwesYouList"></div></div>
+  <div class="card" style="margin-top:18px"><div class="section-title"><h3>Purchases</h3></div><div class="list" id="purchaseHistory"></div></div>
 </section>
 
 <section id="people" class="view">
@@ -678,6 +672,12 @@ function toast(msg){const x=document.getElementById('toast');x.textContent=msg;x
 function goHome(){window.open('https://www.google.com/maps/dir/?api=1&origin=Current+Location&destination=3520+Peachtree+Rd+NE%2C+Atlanta%2C+GA+30326&travelmode=driving','_blank')}
 function openModal(id){document.getElementById(id).classList.add('open');if(id==='purchaseModal')payerChanged()}
 function closeModal(id){document.getElementById(id).classList.remove('open')}
+const TRIPLY_PEOPLE=['Mike','Sarah','John','Dave'];
+const TRIPLY_NAMES={Mike:'Mike Ribbing',Sarah:'Sarah Johnson',John:'John Smith',Dave:'Dave'};
+const TRIPLY_CURRENT_USER='Mike';
+let triplyPurchases=[];
+let triplySettlementPayments=[];
+
 function payerChanged(){
  const payer=document.getElementById('purchasePayer').value;
  document.querySelectorAll('#purchasePeople input').forEach(x=>{
@@ -685,14 +685,115 @@ function payerChanged(){
   if(x.value===payer)x.checked=true;
  });
 }
-function selectAll(){document.querySelectorAll('#purchasePeople input').forEach(x=>x.checked=true);payerChanged();toast('All participants selected')}
-function savePurchase(){
+function selectAll(){
+ document.querySelectorAll('#purchasePeople input').forEach(x=>x.checked=true);
  payerChanged();
- const payer=document.getElementById('purchasePayer').value;
- const payerBox=document.querySelector('#purchasePeople input[value="'+payer+'"]');
- if(payerBox)payerBox.checked=true;
- closeModal('purchaseModal');toast('Purchase logged successfully');
+ toast('All participants selected');
 }
+function savePurchase(){
+ const description=document.getElementById('purchaseDescription').value.trim();
+ const amount=Number(document.getElementById('purchaseAmount').value);
+ const payer=document.getElementById('purchasePayer').value;
+ const people=[...document.querySelectorAll('#purchasePeople input:checked')].map(x=>x.value);
+ if(!description||!Number.isFinite(amount)||amount<=0){toast('Enter a description and valid amount');return;}
+ if(!people.includes(payer))people.push(payer);
+ triplyPurchases.push({description,amount,payer,people,created_at:new Date().toISOString()});
+ closeModal('purchaseModal');
+ document.getElementById('purchaseDescription').value='';
+ document.getElementById('purchaseAmount').value='';
+ renderTriplyDues();
+ toast('Purchase logged successfully');
+}
+
+/* Pairwise dues ledger. A purchase creates a debt from every non-payer
+participant to the payer for that person's equal share. Mark Paid closes
+only that exact debtor/creditor pair. Pay does not settle the debt. */
+function triplyPairKey(a,b){return a<b?a+'||'+b:b+'||'+a;}
+function calculateTriplyPairwiseSettlements(){
+ const pairBalances={};
+ const addPairDelta=(debtor,creditor,amount)=>{
+  if(!TRIPLY_PEOPLE.includes(debtor)||!TRIPLY_PEOPLE.includes(creditor)||debtor===creditor||amount<=0)return;
+  const key=triplyPairKey(debtor,creditor);
+  if(!Object.prototype.hasOwnProperty.call(pairBalances,key))pairBalances[key]=0;
+  const parts=key.split('||');
+  pairBalances[key]+=debtor===parts[0]?amount:-amount;
+ };
+ const events=[];
+ triplyPurchases.forEach((purchase,index)=>events.push({type:'purchase',stamp:String(purchase.created_at||''),index,purchase}));
+ triplySettlementPayments.forEach((payment,index)=>events.push({type:'payment',stamp:String(payment.paid_at||payment.created_at||''),index,payment}));
+ events.sort((a,b)=>{const t=a.stamp.localeCompare(b.stamp);if(t)return t;if(a.type===b.type)return a.index-b.index;return a.type==='purchase'?-1:1;});
+ events.forEach(event=>{
+  if(event.type==='purchase'){
+   const p=event.purchase, people=Array.isArray(p.people)?p.people:[], amount=Number(p.amount)||0;
+   if(!people.length||amount<=0||!TRIPLY_PEOPLE.includes(p.payer))return;
+   const share=amount/people.length;
+   people.forEach(person=>{if(TRIPLY_PEOPLE.includes(person)&&person!==p.payer)addPairDelta(person,p.payer,share);});
+  }else{
+   const p=event.payment;
+   if(!TRIPLY_PEOPLE.includes(p.debtor)||!TRIPLY_PEOPLE.includes(p.creditor)||p.debtor===p.creditor)return;
+   pairBalances[triplyPairKey(p.debtor,p.creditor)]=0;
+  }
+ });
+ const settlements={};
+ Object.entries(pairBalances).forEach(([key,value])=>{
+  if(Math.abs(value)<=0.005)return;
+  const [a,b]=key.split('||');
+  settlements[value>0?a+'||'+b:b+'||'+a]=Math.round(Math.abs(value)*100)/100;
+ });
+ return settlements;
+}
+function calculateTriplyBalances(){
+ const balances=Object.fromEntries(TRIPLY_PEOPLE.map(p=>[p,0]));
+ Object.entries(calculateTriplyPairwiseSettlements()).forEach(([key,amount])=>{
+  const [debtor,creditor]=key.split('||');
+  balances[debtor]-=amount;
+  balances[creditor]+=amount;
+ });
+ return balances;
+}
+function triplyDisplayName(p){return TRIPLY_NAMES[p]||p;}
+function triplyMoney(n){return '$'+Number(n).toFixed(2);}
+function triplySettlementRows(filterType){
+ const settlements=calculateTriplyPairwiseSettlements();
+ return Object.entries(settlements).map(([key,amount])=>{
+  const [debtor,creditor]=key.split('||');
+  if(filterType==='owe'&&debtor!==TRIPLY_CURRENT_USER)return null;
+  if(filterType==='owed'&&creditor!==TRIPLY_CURRENT_USER)return null;
+  return {debtor,creditor,amount};
+ }).filter(Boolean).sort((a,b)=>b.amount-a.amount);
+}
+function renderTriplyDebtList(id,rows,emptyText){
+ const el=document.getElementById(id);
+ if(!rows.length){el.innerHTML='<div class="item"><div class="muted">'+emptyText+'</div></div>';return;}
+ el.innerHTML=rows.map(r=>{
+  const other=r.debtor===TRIPLY_CURRENT_USER?r.creditor:r.debtor;
+  const action=r.debtor===TRIPLY_CURRENT_USER
+   ?'<div class="actions"><button class="btn primary" onclick="pay(\''+other+'\','+r.amount+')">Pay '+triplyMoney(r.amount)+'</button><button class="btn success" onclick="markTriplyPaid(\''+r.debtor+'\',\''+r.creditor+'\','+r.amount+',this)">Mark Paid</button></div>'
+   :'<div class="actions"><button class="btn success" onclick="markTriplyPaid(\''+r.debtor+'\',\''+r.creditor+'\','+r.amount+',this)">Mark Paid</button></div>';
+  const text=r.debtor===TRIPLY_CURRENT_USER?'You owe '+triplyDisplayName(other):triplyDisplayName(other)+' owes you';
+  return '<div class="item"><div class="row"><div><strong>'+text+'</strong><div class="muted">'+triplyMoney(r.amount)+'</div></div>'+action+'</div></div>';
+ }).join('');
+}
+function markTriplyPaid(debtor,creditor,amount,btn){
+ triplySettlementPayments.push({debtor,creditor,amount:Number(amount),paid_at:new Date().toISOString()});
+ renderTriplyDues();
+ toast(triplyDisplayName(debtor)+' marked paid — '+triplyMoney(amount));
+}
+function renderTriplyDues(){
+ const balances=calculateTriplyBalances();
+ const mine=balances[TRIPLY_CURRENT_USER]||0;
+ const amount=document.getElementById('yourBalanceAmount');
+ const label=document.getElementById('yourBalanceLabel');
+ amount.className='money '+(mine<-.005?'negative':mine>.005?'positive':'');
+ amount.textContent=triplyMoney(Math.abs(mine));
+ label.textContent=mine<-.005?'You owe':mine>.005?'You are owed':'Even';
+ renderTriplyDebtList('whoYouOweList',triplySettlementRows('owe'),'You currently owe no one.');
+ renderTriplyDebtList('whoOwesYouList',triplySettlementRows('owed'),'No one currently owes you.');
+ const history=document.getElementById('purchaseHistory');
+ if(!triplyPurchases.length){history.innerHTML='<div class="item"><div class="muted">No purchases yet.</div></div>';return;}
+ history.innerHTML=[...triplyPurchases].reverse().map(p=>'<div class="item"><strong>'+p.description+'</strong><div class="muted">'+triplyMoney(p.amount)+' • Paid by '+triplyDisplayName(p.payer)+' • '+p.people.map(triplyDisplayName).join(', ')+'</div></div>').join('');
+}
+
 function saveEvent(){
  const type=document.getElementById('eventType').value;
  const title=document.getElementById('eventTitle').value.trim();
@@ -719,8 +820,8 @@ function saveEvent(){
 }
 function sendInvite(){closeModal('inviteModal');toast('Text invitation sent')}
 function editToast(){toast('Edit mode opened')}
-function pay(name,amt){toast('Opening payment for '+name+' — $'+amt.toFixed(2))}
-function markPaid(btn,name,amt){btn.disabled=true;btn.textContent='Paid';btn.previousElementSibling?.remove();toast(name+' marked paid — $'+amt.toFixed(2))}
+function pay(name,amt){toast('Payment opened for '+triplyDisplayName(name)+' — '+triplyMoney(amt)+'. Mark Paid after the payment is actually made.')}
+function markPaid(btn,name,amt){markTriplyPaid(TRIPLY_CURRENT_USER,name,amt,btn)}
 function theme(el){document.querySelectorAll('.theme').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');toast(el.querySelector('b').textContent+' theme selected')}
 function openWebsite(name){window.open('https://www.google.com/search?q='+name+'+Atlanta+official+website','_blank')}
 function updateEventFields(){
@@ -764,6 +865,10 @@ function searchPlaces(){
  }).join('') || '<div class="card">Choose at least one price range.</div>';
 }
 searchPlaces();
+
+// Initialize the shared dues ledger and lock the payer into the participant list.
+payerChanged();
+renderTriplyDues();
 </script>
 </body>
 </html>
