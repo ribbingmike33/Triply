@@ -1,117 +1,88 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b2117">
-<title>Fairway 100</title>
+l<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fieldstone Modified Alternate Shot Caddie</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap');
-:root{--bg:#08160f;--panel:#0f2419;--panel2:#142d20;--cream:#f4f0e6;--muted:#8b998f;--gold:#c7aa6b;--line:rgba(255,255,255,.09);--green:#2d6245}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--cream);font-family:DM Sans,Arial,sans-serif}
-button,input{font:inherit}.app{min-height:100vh;background:radial-gradient(circle at 85% 0,rgba(61,118,84,.18),transparent 32%),linear-gradient(145deg,#08160f,#0b1e14 65%,#10291d)}
-header{height:72px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20;background:rgba(8,22,15,.88);backdrop-filter:blur(16px)}
-.brand{display:flex;align-items:center;gap:12px}.mark{width:38px;height:38px;border:1px solid rgba(199,170,107,.6);border-radius:50%;display:grid;place-items:center;color:var(--gold);font-size:16px}.brand b{font:600 22px 'Playfair Display';letter-spacing:-.4px}.brand b span{color:var(--gold)}
-.avatar{width:38px;height:38px;border-radius:50%;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;color:var(--gold);font-weight:700}
-nav{max-width:1160px;margin:auto;padding:24px 24px 0;display:flex;gap:6px}.nav{border:0;background:transparent;color:var(--muted);padding:11px 17px;border-radius:8px;font-weight:700}.nav.active{color:var(--cream);background:rgba(255,255,255,.055)}.nav.active:after{content:"";display:block;height:2px;background:var(--gold);margin:9px 2px -11px}
-main{max-width:1160px;margin:auto;padding:34px 24px 80px}.page{display:none}.page.active{display:block}
-.hero{display:grid;grid-template-columns:1fr 350px;gap:24px;align-items:stretch}.copy{padding:28px 0}.eyebrow{text-transform:uppercase;letter-spacing:2px;color:var(--gold);font-size:11px;font-weight:700;margin-bottom:10px}h1{font:600 clamp(40px,5vw,60px)/.98 'Playfair Display';letter-spacing:-1.5px;margin:0 0 16px}.copy p{max-width:590px;color:var(--muted);line-height:1.65;margin:0}
-.card{background:linear-gradient(145deg,rgba(255,255,255,.07),rgba(255,255,255,.025));border:1px solid var(--line);border-radius:17px;padding:24px;box-shadow:0 20px 55px rgba(0,0,0,.18)}.statlabel{text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);font-size:11px}.stat{display:flex;align-items:baseline;gap:7px;margin:15px 0}.stat strong{font:600 56px 'Playfair Display'}.stat span{color:var(--muted)}.bar{height:7px;background:rgba(255,255,255,.08);border-radius:20px;overflow:hidden}.fill{height:100%;width:0;background:var(--gold);transition:.3s}.statfoot{display:flex;justify-content:space-between;color:var(--muted);font-size:12px;margin-top:12px}
-.controls{display:flex;justify-content:space-between;gap:14px;align-items:center;margin:34px 0 16px}.seg{display:flex;padding:4px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:9px}.seg button{border:0;background:transparent;color:var(--muted);padding:9px 14px;border-radius:6px;font-size:13px;font-weight:700}.seg button.active{background:var(--cream);color:var(--bg)}.search{position:relative;width:290px}.search input{width:100%;height:43px;padding:0 13px 0 38px;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:8px;color:var(--cream);outline:0}.search input:focus{border-color:rgba(199,170,107,.5)}.search span{position:absolute;left:13px;top:10px;color:var(--muted)}
-.label{text-transform:uppercase;letter-spacing:1.7px;color:var(--muted);font-size:11px;margin:24px 0 10px}.list{display:flex;flex-direction:column;gap:7px}
-.row{display:grid;grid-template-columns:54px 48px 1fr 150px 100px;align-items:center;gap:14px;min-height:78px;padding:11px 15px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);border-radius:11px}.row:hover{background:rgba(255,255,255,.06);border-color:rgba(199,170,107,.2)}.rank{font:600 19px 'Playfair Display';color:var(--gold);text-align:center}.logo{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#1d4731,#0b2116);border:1px solid rgba(199,170,107,.35);color:var(--gold);font:600 12px 'Playfair Display';overflow:hidden}.logo img{width:100%;height:100%;object-fit:contain;padding:6px}.course{font:600 17px 'Playfair Display'}.loc{font-size:12px;color:var(--muted);margin-top:3px}.meta{font-size:12px;color:var(--muted)}.played{color:var(--cream)}.check{display:inline-grid;place-items:center;width:21px;height:21px;border-radius:50%;background:rgba(199,170,107,.12);color:var(--gold);margin-right:6px}.gold{color:var(--gold-light,var(--gold));font-weight:700}
-.listhead{display:flex;align-items:end;justify-content:space-between;margin-bottom:23px}.listhead h2{font:600 37px 'Playfair Display';margin:0 0 5px}.listhead p{margin:0;color:var(--muted);font-size:13px}.primary{border:0;background:var(--gold);color:#08160f;padding:12px 17px;border-radius:8px;font-weight:800}.primary:hover{filter:brightness(1.08)}
-.rankrow{display:grid;grid-template-columns:27px 32px 46px 1fr 90px;align-items:center;gap:12px;min-height:73px;padding:10px 13px;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.055);border-radius:11px;cursor:grab}.rankrow.dragging{opacity:.35;border-color:var(--gold)}.rankrow.over{border-color:var(--gold);background:rgba(199,170,107,.08)}.handle{color:#617067;font-size:18px;letter-spacing:-3px}.myrank{font:600 18px 'Playfair Display';color:var(--gold)}.count{text-align:right;color:var(--muted);font-size:11px}.count strong{color:var(--cream);font-size:13px}
-.empty{text-align:center;padding:65px 20px;border:1px dashed rgba(255,255,255,.12);border-radius:12px;color:var(--muted)}.empty h3{font:600 25px 'Playfair Display';color:var(--cream);margin:0 0 7px}
-.backdrop{position:fixed;inset:0;background:rgba(2,8,5,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:20px;z-index:100}.backdrop.open{display:flex}.modal{width:min(520px,100%);background:#10281c;border:1px solid var(--line);border-radius:17px;padding:26px;box-shadow:0 30px 90px #0008}.modal h3{font:600 28px 'Playfair Display';margin:0 0 4px}.sub{font-size:13px;color:var(--muted);margin-bottom:20px}.group{margin-bottom:15px}.group label{display:block;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;font-size:10px;margin-bottom:6px}.group input{width:100%;height:44px;border:1px solid var(--line);background:rgba(255,255,255,.045);border-radius:8px;color:var(--cream);padding:0 11px;outline:0}.result{display:block;width:100%;text-align:left;border:1px solid rgba(255,255,255,.07);background:rgba(255,255,255,.035);color:var(--cream);padding:11px;border-radius:8px;margin:5px 0}.result small{display:block;color:var(--muted);margin-top:3px}.actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.secondary{border:1px solid var(--line);background:transparent;color:var(--cream);padding:11px 16px;border-radius:8px}
-.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--cream);color:var(--bg);padding:11px 16px;border-radius:8px;font-size:13px;font-weight:800;transition:.25s;z-index:200}.toast.show{opacity:1;transform:translate(-50%,0)}
-@media(max-width:760px){header{padding:0 16px;height:65px}nav{padding:17px 14px 0;overflow:auto}main{padding:22px 14px 60px}.hero{grid-template-columns:1fr}.copy{padding:10px 0}.controls{flex-direction:column;align-items:stretch}.seg{overflow:auto}.seg button{flex:1;white-space:nowrap}.search{width:100%}.row{grid-template-columns:34px 42px 1fr 45px;gap:9px;padding:10px}.row .meta{display:none}.course{font-size:16px}.listhead{flex-direction:column;align-items:stretch;gap:15px}.listhead .primary{width:100%}.rankrow{grid-template-columns:22px 25px 42px 1fr 52px;gap:8px;padding:9px}.rankrow .loc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}}
-</style>
-</head>
-<body>
-<div class="app">
-<header><div class="brand"><div class="mark">◉</div><b>Fairway <span>100</span></b></div><div class="avatar">MR</div></header>
-<nav><button class="nav active" data-page="top">Top 100</button><button class="nav" data-page="mine">My List</button></nav>
-
-<main>
-<section id="top" class="page active">
-<div class="hero">
-<div class="copy"><div class="eyebrow">The great courses</div><h1>Your Top 100 journey.</h1><p>Track the world's, America's and Michigan's greatest golf courses. See how many you've played and keep building your golf resume.</p></div>
-<div class="card"><div class="statlabel">World Top 100</div><div class="stat"><strong id="num">0</strong><span>/ 100 played</span></div><div class="bar"><div class="fill" id="fill"></div></div><div class="statfoot"><span id="remain">100 remaining</span><span>Keep playing.</span></div></div>
-</div>
-<div class="controls"><div class="seg" id="topseg"><button class="active" data-f="world">World</button><button data-f="usa">USA</button><button data-f="michigan">Michigan</button></div><div class="search"><span>⌕</span><input id="topsearch" placeholder="Search courses..."></div></div>
-<div class="label">Top courses</div><div class="list" id="toplist"></div>
-</section>
-
-<section id="mine" class="page">
-<div class="listhead"><div><div class="eyebrow">Your courses</div><h2>My List</h2><p>Press and drag a course to change your ranking.</p></div><button class="primary" id="log">+ Log a Round</button></div>
-<div class="controls"><div class="seg"><button class="active">Played</button></div><div class="search"><span>⌕</span><input id="mysearch" placeholder="Search my courses..."></div></div>
-<div class="label">Personal ranking</div><div class="list" id="mylist"></div>
-</section>
+:root{--navy:#10243a;--gold:#c6a15b;--cream:#f5f1e8;--ink:#18232d;--muted:#68747f;--line:#d8d2c5;--orange:#c86f2b;--blue:#2d5f91;--water:#4b91ad;--sand:#b99a63}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif}.wrap{max-width:1120px;margin:auto;padding:16px}
+header{display:flex;justify-content:space-between;gap:18px;align-items:end}.brand{font:700 34px Georgia,serif;color:var(--navy)}.sub{font-size:12px;color:var(--muted);margin-top:4px}.order{font-size:11px;color:var(--muted);text-align:right;max-width:450px}.order b{color:var(--navy)}
+.tabs{display:flex;overflow:auto;gap:5px;padding:12px 0}.tabs button{height:40px;min-width:42px;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--navy);font-weight:850}.tabs button.active{background:var(--navy);color:#fff}.tabs button.start{box-shadow:inset 0 -3px var(--gold)}
+.layout{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,.8fr);gap:14px}.panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px}
+.kicker{font-size:11px;text-transform:uppercase;letter-spacing:.09em;font-weight:900;color:var(--muted)}h2{font:700 27px Georgia,serif;color:var(--navy);margin:2px 0}.meta{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 12px}.pill{background:#f0ece2;padding:5px 9px;border-radius:999px;font-size:11px;font-weight:800}
+.map{position:relative;border-radius:12px;overflow:hidden;border:1px solid #bfc6ba;background:#d9e3d4;aspect-ratio:1.55/1}
+.course{position:absolute;inset:0;background-image:url("https://fieldstonegolfclub.com/wp-content/uploads/2023/11/slide1-460e6c628d1b0e851bfab053f275ef82.jpg");background-size:cover;background-position:center}
+.focus{position:absolute;inset:0;background:radial-gradient(circle at var(--fx) var(--fy),rgba(255,255,255,.0) 0 17%,rgba(16,36,58,.32) 38%,rgba(16,36,58,.48) 100%);pointer-events:none}
+.line{position:absolute;left:12%;top:50%;height:2px;width:76%;background:#ffffffaa;box-shadow:0 0 0 1px #10243a33;transform:rotate(var(--rot));transform-origin:left center;pointer-events:none}
+.ball{position:absolute;width:31px;height:31px;border-radius:50%;border:3px solid white;box-shadow:0 2px 7px #0008;transform:translate(-50%,-50%);z-index:5;color:#fff;font-size:9px;font-weight:950;display:grid;place-items:center;cursor:pointer}
+.ball.mike{background:var(--orange)}.ball.zach{background:var(--blue)}
+.mapnote{font-size:11px;color:var(--muted);margin-top:7px}.source{font-size:10px;color:var(--muted);margin-top:8px}
+.controls{display:grid;gap:10px}.control{border:1px solid var(--line);border-radius:12px;padding:12px}.control h3{font-size:12px;color:var(--navy);margin:0 0 8px}.seg{display:grid;grid-template-columns:repeat(2,1fr);gap:5px}.seg button{min-height:42px;border:1px solid var(--line);background:#fbfaf7;border-radius:8px;font-weight:750}.seg button.sel{background:var(--navy);color:#fff;border-color:var(--navy)}
+.result{background:#eef3ed;border:1px solid #cbd8c8;border-radius:11px;padding:13px}.eyebrow{font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:900;color:#315c43}.result h3{font:700 23px Georgia,serif;color:var(--navy);margin:2px 0 5px}.result p{font-size:12px;line-height:1.45;margin:0}.why{margin-top:8px;border-top:1px solid #d4ded1;padding-top:8px;font-size:11px;line-height:1.45}
+.hazard{font-size:11px;line-height:1.35;color:#4f5660}.hazard b{color:var(--navy)}
+.actions{display:flex;justify-content:space-between;gap:8px;margin-top:10px}.actions button{padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:#fff;font-weight:800;color:var(--navy)}
+@media(max-width:760px){.wrap{padding:11px}.layout{grid-template-columns:1fr}.brand{font-size:27px}header{align-items:start;flex-direction:column}.order{text-align:left}.map{aspect-ratio:1.2/1}}
+</style></head>
+<body><div class="wrap">
+<header><div><div class="brand">Fieldstone • Modified Alternate Shot</div><div class="sub">Official Fieldstone course-layout imagery + interactive Mike/Zach ball selection</div></div>
+<div class="order">Shotgun start: <b>9 → 10 → 11 → 12 → 13 → 14 → 15 → 16 → 17 → 18 → 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8</b></div></header>
+<nav class="tabs" id="tabs"></nav>
+<div class="layout"><main class="panel">
+<div class="kicker" id="kicker"></div><h2 id="title"></h2><div class="meta" id="meta"></div>
+<div class="map" id="map"><div class="course"></div><div class="focus" id="focus"></div><div class="line" id="line"></div>
+<div class="ball mike" id="mike">M</div><div class="ball zach" id="zach">Z</div></div>
+<div class="mapnote">The background is the official Fieldstone course-layout image. Tap the map to place the selected tee ball; the shaded focus is the current hole area.</div>
+<div class="source">Course layout imagery: Fieldstone Golf Club. Yardage/hazard data: published course data / OpenYardage. Gold tees: 6,386 yards.</div>
+<div class="actions"><button id="reset">Reset hole</button><button id="next">Next hole →</button></div>
 </main>
-</div>
-
-<div class="backdrop" id="modal"><div class="modal"><h3>Log a round</h3><div class="sub">Search the 900-course database or add a course.</div><div class="group"><label>Course</label><input id="modalsearch" placeholder="Search course name..."></div><div id="results"></div><div class="actions"><button class="secondary" id="close">Cancel</button><button class="primary" id="add">+ Add Course</button></div></div></div>
-<div class="backdrop" id="addmodal"><div class="modal"><h3>Add a course</h3><div class="sub">Add anything that isn't in the pre-loaded lists.</div><div class="group"><label>Course Name</label><input id="newname" placeholder="Course name"></div><div class="group"><label>Location</label><input id="newloc" placeholder="City, State / Country"></div><div class="group"><label>Logo URL — optional</label><input id="newlogo" placeholder="https://..."></div><div class="actions"><button class="secondary" id="addclose">Cancel</button><button class="primary" id="save">Add & Log Round</button></div></div></div>
-<div class="toast" id="toast"></div>
-
+<aside class="controls">
+<div class="control"><h3>Place ball</h3><div class="seg" id="who"><button data-who="Mike" class="sel">Mike</button><button data-who="Zach">Zach</button></div></div>
+<div class="control"><h3>Lie / condition</h3><div class="seg" id="mikeLie"><button data-lie="fairway" class="sel">Mike fairway</button><button data-lie="rough">Mike rough</button><button data-lie="trees">Mike trees</button><button data-lie="blocked">Mike blocked</button></div><div style="height:6px"></div><div class="seg" id="zachLie"><button data-lie="fairway" class="sel">Zach fairway</button><button data-lie="rough">Zach rough</button><button data-lie="trees">Zach trees</button><button data-lie="blocked">Zach blocked</button></div></div>
+<div class="control"><h3>Recommendation</h3><div class="result" id="result" aria-live="polite"></div></div>
+<div class="control"><h3>Hole-specific intelligence</h3><div class="hazard" id="details"></div></div>
+</aside></div></div>
 <script>
-/* Demo seed data. Replace this array with the complete 900-course database:
-   Michigan 300 + USA 300 + World 300. */
-const courses=[
-{id:"w1",name:"Pine Valley Golf Club",location:"Pine Valley, New Jersey",region:"usa",world:1,usa:1,michigan:null},
-{id:"w2",name:"Augusta National Golf Club",location:"Augusta, Georgia",region:"usa",world:2,usa:2,michigan:null},
-{id:"w3",name:"Royal County Down",location:"Newcastle, Northern Ireland",region:"world",world:3,usa:null,michigan:null},
-{id:"w4",name:"St Andrews — Old Course",location:"St Andrews, Scotland",region:"world",world:4,usa:null,michigan:null},
-{id:"w5",name:"Oakmont Country Club",location:"Oakmont, Pennsylvania",region:"usa",world:5,usa:3,michigan:null},
-{id:"w6",name:"Pebble Beach Golf Links",location:"Pebble Beach, California",region:"usa",world:6,usa:4,michigan:null},
-{id:"w7",name:"Cypress Point Club",location:"Pebble Beach, California",region:"usa",world:7,usa:5,michigan:null},
-{id:"m1",name:"Crystal Downs Country Club",location:"Frankfort, Michigan",region:"michigan",world:20,usa:18,michigan:1},
-{id:"m2",name:"Oakland Hills Country Club",location:"Bloomfield Hills, Michigan",region:"michigan",world:45,usa:40,michigan:2},
-{id:"m3",name:"Arcadia Bluffs",location:"Arcadia, Michigan",region:"michigan",world:72,usa:61,michigan:3},
-{id:"m4",name:"Forest Dunes Golf Club",location:"Roscommon, Michigan",region:"michigan",world:98,usa:83,michigan:4},
-{id:"w8",name:"Whistling Straits",location:"Kohler, Wisconsin",region:"usa",world:30,usa:20,michigan:null},
-{id:"w9",name:"Cabot Cliffs",location:"Inverness, Nova Scotia",region:"world",world:12,usa:null,michigan:null}
-];
-
-let state=JSON.parse(localStorage.getItem("fairway100")||'{"played":{},"myList":[]}');
-let filter="world",dragged=null;
-const save=()=>localStorage.setItem("fairway100",JSON.stringify(state));
-const get=id=>courses.find(c=>c.id==id);
-const count=id=>state.played[id]||0;
-const initials=n=>n.split(/\s+/).slice(0,2).map(x=>x[0]).join("").toUpperCase();
-function toast(t){let x=document.getElementById("toast");x.textContent=t;x.classList.add("show");setTimeout(()=>x.classList.remove("show"),1900)}
-
-function renderTop(){
- let q=document.getElementById("topsearch").value.toLowerCase();
- let arr=courses.filter(c=>filter==="world"?c.world:filter==="usa"?c.usa:c.michigan)
- .filter(c=>c.name.toLowerCase().includes(q)||c.location.toLowerCase().includes(q))
- .sort((a,b)=>(a[filter==="world"?"world":filter==="usa"?"usa":"michigan"]||999)-(b[filter==="world"?"world":filter==="usa"?"usa":"michigan"]||999))
- .slice(0,100);
- let box=document.getElementById("toplist");box.innerHTML="";
- arr.forEach(c=>{let r=c[filter==="world"?"world":filter==="usa"?"usa":"michigan"];let p=count(c.id);let el=document.createElement("div");el.className="row";el.innerHTML=`<div class="rank">#${r}</div><div class="logo">${c.logo?`<img src="${c.logo}">`:initials(c.name)}</div><div><div class="course">${c.name}</div><div class="loc">${c.location}</div></div><div class="meta">${p?`<span class="check">✓</span><span class="played">Played ${p}×</span>`:"Not played"}</div><div class="gold">${p?p+" round"+(p==1?"":"s"):""}</div>`;box.appendChild(el)});
- let top=courses.filter(c=>c.world&&c.world<=100),played=top.filter(c=>count(c.id)).length;
- document.getElementById("num").textContent=played;document.getElementById("fill").style.width=played+"%";document.getElementById("remain").textContent=(100-played)+" remaining";
+const holes=[{"h":1,"par":4,"yards":405,"si":1,"default":"Mike","note":"Bunker/penalty areas: left and right; keep drive in the central corridor.","hazards":[[87,102,"L","bunker"],[278,293,"R","bunker"],[392,416,"L","water"]]},{"h":2,"par":3,"yards":140,"si":17,"default":"Par 3","note":"Hazards near the green on both sides; prioritize the stock club and safe miss.","hazards":[[129,141,"R","bunker"],[163,174,"R","water"]]},{"h":3,"par":4,"yards":307,"si":15,"default":"Zach","note":"Short par 4; preserve a clean angle for Mike's wedge/short approach.","hazards":[[62,317,"R","water"],[231,254,"L","bunker"]]},{"h":4,"par":4,"yards":347,"si":13,"default":"Zach","note":"Multiple side hazards; position matters more than raw drive length.","hazards":[[197,242,"R","water"],[324,357,"R","water"]]},{"h":5,"par":4,"yards":345,"si":11,"default":"Zach","note":"Water/penalty trouble is a factor; favor the ball with the cleanest angle.","hazards":[[202,222,"L","water"],[370,381,"L","water"]]},{"h":6,"par":5,"yards":498,"si":5,"default":"Mike","note":"Long par 5; take the drive that gives the other player a clean layup/approach.","hazards":[[305,352,"R","water"],[488,518,"R","water"],[505,518,"L","water"]]},{"h":7,"par":5,"yards":561,"si":3,"default":"Mike","note":"Major scoring hole with right-side trouble and long carries; position is critical.","hazards":[[220,261,"R","water"],[417,454,"R","water"],[539,553,"L","water"]]},{"h":8,"par":3,"yards":197,"si":7,"default":"Par 3","note":"Use the more automatic long-iron/hybrid trajectory and safe miss.","hazards":[[172,195,"L","bunker"],[206,219,"L","water"]]},{"h":9,"par":4,"yards":372,"si":9,"default":"Mike","note":"Published hole description favors a draw and notes a long bunker right, trouble left, and greenside bunkers.","hazards":[[208,277,"R","bunker"],[284,308,"L","bunker"],[384,422,"R","bunker"]]},{"h":10,"par":3,"yards":173,"si":12,"default":"Par 3","note":"Choose the more automatic mid-iron/trajectory; account for wind.","hazards":[[164,194,"R","bunker"],[166,174,"L","bunker"]]},{"h":11,"par":4,"yards":330,"si":18,"default":"Zach","note":"Shorter par 4; a clean wedge number for Mike is valuable.","hazards":[[243,289,"L","bunker"],[329,357,"R","bunker"]]},{"h":12,"par":5,"yards":533,"si":14,"default":"Mike","note":"Long par 5; take the ball that creates the cleanest layup and wedge sequence.","hazards":[[180,235,"R","water"],[541,564,"L","water"]]},{"h":13,"par":4,"yards":347,"si":6,"default":"Zach","note":"Position and angle matter; avoid side trouble.","hazards":[[66,171,"R","bunker"],[60,156,"R","water"]]},{"h":14,"par":3,"yards":158,"si":10,"default":"Par 3","note":"Stock iron/trajectory decision; no tee-ball selection.","hazards":[[164,176,"R","bunker"],[214,264,"L","water"]]},{"h":15,"par":4,"yards":416,"si":2,"default":"Mike","note":"Long dogleg left; published description says carrying the corner saves significant approach distance.","hazards":[[370,389,"R","bunker"],[338,356,"R","water"]]},{"h":16,"par":5,"yards":539,"si":8,"default":"Mike","note":"Long par 5; favor a clean first/second-shot sequence.","hazards":[[292,312,"R","water"],[517,538,"R","water"]]},{"h":17,"par":4,"yards":424,"si":4,"default":"Mike","note":"Long par 4; prioritize the ball giving the other player the manageable approach.","hazards":[[62,168,"L","bunker"],[152,187,"R","bunker"],[417,432,"L","water"]]},{"h":18,"par":4,"yards":294,"si":16,"default":"Zach","note":"Short par 4; Zach drive often leaves Mike a very short approach.","hazards":[[273,388,"L","bunker"],[288,319,"R","water"]]}],shotgun=[9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 1, 2, 3, 4, 5, 6, 7, 8];
+const state={};holes.forEach(h=>state[h.h]={who:"Mike",mike:{x:.34,y:.52,lie:"fairway"},zach:{x:.42,y:.48,lie:"fairway"}});
+let current=9;
+function H(){return holes.find(x=>x.h===current)}
+function dFromX(x){return Math.max(15,Math.round(H().yards*(1-Math.max(0,Math.min(1,(x-.10)/.80))))))}
+function penalty(s){return ({fairway:0,rough:8,trees:30,blocked:55}[s.lie]||0)+((s.x<.25||s.x>.75)?7:0)}
+function rec(){
+ const h=H(); if(h.par===3)return {t:"PAR 3 — USE THE STOCK CLUB",p:"There is no tee-ball choice. Use the player whose stock club, trajectory and miss pattern best fit today's pin and wind.",w:"Par 3: the tee shot is the approach."};
+ const m=state[current].mike,z=state[current].z,md=dFromX(m.x),zd=dFromX(z.x),mp=penalty(m),zp=penalty(z);
+ const mikeApproach=md<=180?0:(md-180)*.18, zachApproach=zd<=165?0:(zd-165)*.25;
+ const takeMike=md+mp+zachApproach <= zd+zp+mikeApproach;
+ const take=takeMike?"Mike":"Zach", chosen=takeMike?m:z, second=takeMike?"Zach":"Mike";
+ let text=`TAKE ${take.toUpperCase()}'S BALL`;
+ let p=`${second} hits next from about ${dFromX(chosen.x)} yards.`;
+ if(penalty(chosen)>=30)p+=" The selected ball has a significant lie/position penalty — visually compare the other ball before committing.";
+ else if(penalty(chosen)>0)p+=" The selected ball has a modest position penalty.";
+ return {t:text,p:p,w:`Hole default: ${h.default}. The engine prioritizes the next player's approach distance, then lie/position. ${h.note}`};
 }
-function renderMine(){
- let q=document.getElementById("mysearch").value.toLowerCase(),arr=state.myList.map(get).filter(Boolean).filter(c=>c.name.toLowerCase().includes(q)||c.location.toLowerCase().includes(q)),box=document.getElementById("mylist");box.innerHTML="";
- if(!arr.length){box.innerHTML='<div class="empty"><h3>Your list is empty.</h3>Log your first round to start ranking courses.</div>';return}
- arr.forEach((c,i)=>{let el=document.createElement("div");el.className="rankrow";el.draggable=true;el.dataset.id=c.id;el.innerHTML=`<div class="handle">⋮⋮</div><div class="myrank">${i+1}</div><div class="logo">${c.logo?`<img src="${c.logo}">`:initials(c.name)}</div><div><div class="course">${c.name}</div><div class="loc">${c.location}</div></div><div class="count"><strong>${count(c.id)}×</strong><br>played</div>`;
- el.ondragstart=()=>{dragged=c.id;el.classList.add("dragging")};el.ondragend=()=>{dragged=null;el.classList.remove("dragging")};el.ondragover=e=>{e.preventDefault();el.classList.add("over")};el.ondragleave=()=>el.classList.remove("over");el.ondrop=e=>{e.preventDefault();el.classList.remove("over");if(dragged===c.id)return;let a=state.myList.indexOf(dragged),b=state.myList.indexOf(c.id);state.myList.splice(a,1);state.myList.splice(b,0,dragged);save();renderMine();toast("Ranking updated")};box.appendChild(el)});
+function render(){
+ const h=H(),s=state[current],r=rec();
+ document.getElementById("kicker").textContent=`Hole ${h.h}`;
+ document.getElementById("title").textContent=`Par ${h.par} • ${h.yards} yards`;
+ document.getElementById("meta").innerHTML=`<span class="pill">Stroke index ${h.si}</span><span class="pill">Default: ${h.default}</span><span class="pill">Modified alternate shot</span>`;
+ ["mike","zach"].forEach(p=>{let b=document.getElementById(p),v=s[p];b.style.left=(v.x*100)+"%";b.style.top=(v.y*100)+"%"});
+ const fx=({1:.30,2:.75,3:.58,4:.35,5:.62,6:.23,7:.17,8:.46,9:.82,10:.76,11:.65,12:.52,13:.48,14:.60,15:.28,16:.23,17:.78,18:.58}[current]);
+ const fy=({1:.68,2:.18,3:.67,4:.55,5:.48,6:.35,7:.23,8:.76,9:.55,10:.34,11:.29,12:.70,13:.48,14:.65,15:.20,16:.57,17:.78,18:.62}[current]);
+ document.getElementById("focus").style.setProperty("--fx",(fx*100)+"%");document.getElementById("focus").style.setProperty("--fy",(fy*100)+"%");
+ document.querySelectorAll("#tabs button").forEach(b=>b.classList.toggle("active",+b.dataset.h===current));
+ document.querySelectorAll("#who button").forEach(b=>b.classList.toggle("sel",b.dataset.who===s.who));
+ document.querySelectorAll("#mikeLie button").forEach(b=>b.classList.toggle("sel",b.dataset.lie===s.mike.lie));
+ document.querySelectorAll("#zachLie button").forEach(b=>b.classList.toggle("sel",b.dataset.lie===s.zach.lie));
+ document.getElementById("result").innerHTML=`<div class="eyebrow">Caddie recommendation</div><h3>${r.t}</h3><p>${r.p}</p><div class="why"><b>Why:</b> ${r.w}</div>`;
+ const hz=h.hazards.map(a=>`${a[0]}–${a[1]} yd ${a[2]} ${a[3]}`).join("<br>")||"No mapped off-the-tee hazard data published.";
+ document.getElementById("details").innerHTML=`<b>Published hazard bands:</b><br>${hz}<br><br><b>Course note:</b> ${h.note}`;
 }
-document.querySelectorAll(".nav").forEach(b=>b.onclick=()=>{document.querySelectorAll(".nav").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));b.classList.add("active");document.getElementById(b.dataset.page).classList.add("active");renderMine()});
-document.querySelectorAll("#topseg button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#topseg button").forEach(x=>x.classList.remove("active"));b.classList.add("active");filter=b.dataset.f;renderTop()});
-document.getElementById("topsearch").oninput=renderTop;document.getElementById("mysearch").oninput=renderMine;
-const modal=document.getElementById("modal"),addmodal=document.getElementById("addmodal");
-document.getElementById("log").onclick=()=>{modal.classList.add("open");document.getElementById("modalsearch").focus();renderResults()};
-document.getElementById("close").onclick=()=>modal.classList.remove("open");
-document.getElementById("modalsearch").oninput=renderResults;
-function renderResults(){let q=document.getElementById("modalsearch").value.toLowerCase(),box=document.getElementById("results");box.innerHTML="";courses.filter(c=>c.name.toLowerCase().includes(q)||c.location.toLowerCase().includes(q)).slice(0,8).forEach(c=>{let b=document.createElement("button");b.className="result";b.innerHTML=`<strong>${c.name}</strong><small>${c.location}</small>`;b.onclick=()=>logRound(c.id);box.appendChild(b)})}
-function logRound(id){state.played[id]=count(id)+1;if(!state.myList.includes(id))state.myList.push(id);save();modal.classList.remove("open");renderTop();renderMine();toast("Round logged")}
-document.getElementById("add").onclick=()=>{modal.classList.remove("open");addmodal.classList.add("open")};
-document.getElementById("addclose").onclick=()=>addmodal.classList.remove("open");
-document.getElementById("save").onclick=()=>{let name=document.getElementById("newname").value.trim(),loc=document.getElementById("newloc").value.trim(),logo=document.getElementById("newlogo").value.trim();if(!name)return toast("Enter a course name");let c={id:"custom-"+Date.now(),name,location:loc||"Location not specified",region:"custom",world:null,usa:null,michigan:null,logo};courses.push(c);state.played[c.id]=1;state.myList.push(c.id);save();addmodal.classList.remove("open");document.getElementById("newname").value="";document.getElementById("newloc").value="";document.getElementById("newlogo").value="";renderTop();renderMine();toast("Course added and round logged")};
-renderTop();renderMine();
-</script>
-</body>
-</html>
+holes.forEach(h=>{const b=document.createElement("button");b.type="button";b.textContent=h.h;b.dataset.h=h.h;if(h.h===9)b.classList.add("start");b.onclick=()=>{current=h.h;render()};document.getElementById("tabs").appendChild(b)});
+document.getElementById("map").addEventListener("click",e=>{if(e.target.closest(".ball"))return;const r=e.currentTarget.getBoundingClientRect(),s=state[current][state[current].who.toLowerCase()];s.x=Math.max(.05,Math.min(.95,(e.clientX-r.left)/r.width));s.y=Math.max(.05,Math.min(.95,(e.clientY-r.top)/r.height));render()});
+document.querySelectorAll("#who button").forEach(b=>b.onclick=()=>{state[current].who=b.dataset.who;render()});
+document.querySelectorAll("#mikeLie button").forEach(b=>b.onclick=()=>{state[current].mike.lie=b.dataset.lie;render()});
+document.querySelectorAll("#zachLie button").forEach(b=>b.onclick=()=>{state[current].zach.lie=b.dataset.lie;render()});
+document.getElementById("mike").onclick=e=>{e.stopPropagation();state[current].who="Mike";render()};
+document.getElementById("zach").onclick=e=>{e.stopPropagation();state[current].who="Zach";render()};
+document.getElementById("reset").onclick=()=>{state[current]={who:"Mike",mike:{x:.34,y:.52,lie:"fairway"},zach:{x:.42,y:.48,lie:"fairway"}};render()};
+document.getElementById("next").onclick=()=>{current=shotgun[(shotgun.indexOf(current)+1)%shotgun.length];render()};
+render();
+</script></body></html>
