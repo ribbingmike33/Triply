@@ -1,0 +1,263 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Fieldstone • Modified Alternate Shot Caddie</title>
+<style>
+:root{
+  --navy:#10243b; --ink:#172231; --cream:#f5f2ea; --paper:#fffdf8;
+  --line:#ddd8cc; --muted:#6c7480; --orange:#ef7f22; --blue:#2f72c9;
+  --green:#246b45; --sand:#c7a46a; --red:#b84b3e;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.app{max-width:1180px;margin:auto;padding:18px}
+header{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:14px}
+.brand{font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);font-size:12px}
+h1{margin:4px 0 0;font-family:Georgia,serif;font-size:30px;color:var(--navy)}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.holebar{display:flex;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
+select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;background:#fff;color:var(--navy);font-size:16px;font-weight:800;padding:0 12px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(16,36,59,.07)}
+.mapwrap{position:relative;background:#111;display:flex;justify-content:center;min-height:650px}
+.map{position:relative;width:min(100%,706px);aspect-ratio:706/1135;overflow:hidden;background:#111}
+.map img{width:100%;height:100%;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
+.ball{position:absolute;width:25px;height:25px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.45);transform:translate(-50%,-50%);z-index:5;touch-action:none;cursor:grab}
+.ball:active{cursor:grabbing}
+.ball.mike{background:var(--orange)}
+.ball.zach{background:var(--blue)}
+.ball span{position:absolute;top:-25px;left:50%;transform:translateX(-50%);background:rgba(16,36,59,.94);color:white;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:900;white-space:nowrap}
+.instructions{padding:13px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);background:#fbfaf5}
+.side{display:grid;gap:12px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kicker{font-size:10px;font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.holetitle{font-family:Georgia,serif;font-size:24px;color:var(--navy);margin:3px 0 8px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}
+.stat{border:1px solid var(--line);border-radius:10px;padding:9px;background:#faf8f2}
+.stat b{display:block;font-size:16px;color:var(--navy)}
+.stat span{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.recommend{border-radius:14px;padding:16px;background:#edf5ef;border:1px solid #c8dfcf}
+.recommend .take{font-size:24px;font-weight:950;color:var(--green);margin:2px 0 5px}
+.recommend p{margin:0;font-size:13px;line-height:1.45}
+.status{display:grid;gap:8px;margin-top:12px}
+.statusrow{display:grid;grid-template-columns:18px 55px 1fr;gap:6px;align-items:center;font-size:13px}
+.dot{width:12px;height:12px;border-radius:50%;border:2px solid white;box-shadow:0 1px 4px #777}
+.mdot{background:var(--orange)} .zdot{background:var(--blue)}
+.lie{font-weight:800;text-align:right}
+.fairway{color:var(--green)} .rough{color:#9a6c24} .bunker{color:var(--red)}
+.override{margin-top:10px;padding-top:10px;border-top:1px solid #d9e5dc;font-size:12px;color:#53615a;line-height:1.4}
+.note{font-size:12px;line-height:1.45;color:#59616c}
+.next{width:100%;height:46px;border:0;border-radius:10px;background:var(--navy);color:#fff;font-weight:900;font-size:14px}
+.next:active{transform:translateY(1px)}
+.legend{display:flex;gap:12px;font-size:10px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px}
+@media(max-width:850px){
+ .app{padding:10px}.layout{grid-template-columns:1fr}.side{grid-template-columns:1fr}
+ header{display:block} h1{font-size:25px}
+ .mapwrap{min-height:0}.map{width:100%}
+ .side{display:block}.panel{margin-top:10px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div>
+    <div class="brand">Fieldstone Golf Club • Auburn Hills</div>
+    <h1>Modified Alternate Shot Caddie</h1>
+    <div class="sub">Place both tee balls. The app reads the lie and recommends which ball to take.</div>
+  </div>
+</header>
+
+<div class="holebar">
+  <select id="holeSelect"></select>
+</div>
+
+<div class="layout">
+  <section class="card">
+    <div class="mapwrap">
+      <div class="map" id="map">
+        <img id="holeImage" alt="Fieldstone hole aerial layout">
+        <div class="ball mike" id="mike"><span>Mike</span></div>
+        <div class="ball zach" id="zach"><span>Zach</span></div>
+      </div>
+    </div>
+    <div class="instructions">
+      <b>Drag the balls directly onto the aerial.</b> Orange = Mike • Blue = Zach. The app classifies the landing spot as fairway, rough, or bunker. Tap empty map space to move the nearer ball.
+    </div>
+  </section>
+
+  <aside class="side">
+    <div class="panel">
+      <div class="kicker">Current hole</div>
+      <div class="holetitle" id="holeTitle"></div>
+      <div class="stats">
+        <div class="stat"><b id="par"></b><span>Par</span></div>
+        <div class="stat"><b id="yds"></b><span>Gold yards</span></div>
+        <div class="stat"><b id="si"></b><span>Handicap</span></div>
+      </div>
+      <div class="status">
+        <div class="statusrow"><i class="dot mdot"></i><b>Mike</b><span class="lie" id="mikeStatus"></span></div>
+        <div class="statusrow"><i class="dot zdot"></i><b>Zach</b><span class="lie" id="zachStatus"></span></div>
+      </div>
+      <div class="legend"><span><i class="mdot"></i>Mike ball</span><span><i class="zdot"></i>Zach ball</span></div>
+    </div>
+
+    <div class="panel">
+      <div class="kicker">Caddie recommendation</div>
+      <div class="recommend" id="recommend"></div>
+    </div>
+
+    <div class="panel">
+      <div class="kicker">Normal hole plan</div>
+      <div class="note" id="holeNote"></div>
+    </div>
+
+    <button class="next" id="next">Next hole →</button>
+  </aside>
+</div>
+</div>
+
+<script>
+const DATA = {"holes":[{"h":1,"par":4,"yds":405,"si":1,"default":"Mike","next":"Zach","note":"Long opening hole. Mike's drive normally leaves Zach a mid-iron."},{"h":2,"par":3,"yds":140,"si":17,"default":"Par 3","next":null,"note":"No tee-ball selection. Use the player with the most automatic stock club."},{"h":3,"par":4,"yds":307,"si":15,"default":"Zach","next":"Mike","note":"Short par 4. Zach's drive normally sets Mike up with a short approach."},{"h":4,"par":4,"yds":347,"si":13,"default":"Zach","next":"Mike","note":"Short-to-mid par 4. Zach's normal drive leaves Mike around a wedge."},{"h":5,"par":4,"yds":345,"si":11,"default":"Zach","next":"Mike","note":"Similar short par 4 profile; prioritize Mike's short approach."},{"h":6,"par":5,"yds":498,"si":5,"default":"Mike","next":"Zach","note":"Take Mike's length, then let Zach lay up to Mike's preferred wedge distance."},{"h":7,"par":5,"yds":561,"si":3,"default":"Mike","next":"Zach","note":"Longest hole. Position matters more than squeezing every yard from the tee."},{"h":8,"par":3,"yds":197,"si":7,"default":"Par 3","next":null,"note":"Long par 3. Use the player with the most comfortable stock mid/long iron."},{"h":9,"par":4,"yds":372,"si":9,"default":"Mike","next":"Zach","note":"Mike's drive normally leaves Zach a manageable short approach."},{"h":10,"par":3,"yds":173,"si":12,"default":"Par 3","next":null,"note":"Mid/long iron. Use the more automatic stock number for the conditions."},{"h":11,"par":4,"yds":330,"si":18,"default":"Zach","next":"Mike","note":"Short par 4. Zach's drive normally gives Mike a wedge/short iron."},{"h":12,"par":5,"yds":533,"si":14,"default":"Mike","next":"Zach","note":"Use Mike's length, then Zach lays up if needed."},{"h":13,"par":4,"yds":347,"si":6,"default":"Zach","next":"Mike","note":"Short par 4; Mike's short approach is the normal target."},{"h":14,"par":3,"yds":158,"si":10,"default":"Par 3","next":null,"note":"Straightforward tee-shot choice based on stock club, wind and pin."},{"h":15,"par":4,"yds":416,"si":2,"default":"Mike","next":"Zach","note":"Long par 4. Mike's drive normally keeps Zach's second shot manageable."},{"h":16,"par":5,"yds":539,"si":8,"default":"Mike","next":"Zach","note":"Use Mike's length, then manage the layup and wedge number."},{"h":17,"par":4,"yds":424,"si":4,"default":"Mike","next":"Zach","note":"Long par 4. Mike's tee ball normally reduces the second-shot burden."},{"h":18,"par":4,"yds":294,"si":16,"default":"Zach","next":"Mike","note":"Short closing hole. Zach's drive normally leaves Mike a very short approach."}],"images":["images/fieldstone-hole-1.jpg","images/fieldstone-hole-2.jpg","images/fieldstone-hole-3.jpg","images/fieldstone-hole-4.jpg","images/fieldstone-hole-5.jpg","images/fieldstone-hole-6.jpg","images/fieldstone-hole-7.jpg","images/fieldstone-hole-8.jpg","images/fieldstone-hole-9.jpg","images/fieldstone-hole-10.jpg","images/fieldstone-hole-11.jpg","images/fieldstone-hole-12.jpg","images/fieldstone-hole-13.jpg","images/fieldstone-hole-14.jpg","images/fieldstone-hole-15.jpg","images/fieldstone-hole-16.jpg","images/fieldstone-hole-17.jpg","images/fieldstone-hole-18.jpg"],"fairways":{"1":[[0.46,0.98],[0.53,0.98],[0.56,0.72],[0.54,0.5],[0.57,0.27],[0.52,0.1],[0.43,0.08],[0.42,0.3],[0.44,0.52],[0.43,0.75]],"2":[[0.42,0.98],[0.58,0.98],[0.57,0.6],[0.54,0.25],[0.46,0.1],[0.38,0.14],[0.4,0.42]],"3":[[0.43,0.98],[0.58,0.98],[0.58,0.7],[0.53,0.47],[0.49,0.25],[0.43,0.1],[0.35,0.12],[0.39,0.38],[0.42,0.7]],"4":[[0.42,0.98],[0.59,0.98],[0.59,0.67],[0.56,0.42],[0.51,0.22],[0.44,0.08],[0.36,0.1],[0.39,0.3],[0.43,0.65]],"5":[[0.44,0.98],[0.58,0.98],[0.59,0.68],[0.56,0.43],[0.53,0.23],[0.46,0.08],[0.37,0.1],[0.4,0.32],[0.43,0.68]],"6":[[0.44,0.98],[0.56,0.98],[0.58,0.73],[0.54,0.5],[0.51,0.29],[0.49,0.1],[0.4,0.09],[0.4,0.32],[0.43,0.58],[0.43,0.78]],"7":[[0.45,0.98],[0.57,0.98],[0.57,0.72],[0.54,0.5],[0.53,0.27],[0.51,0.08],[0.42,0.08],[0.42,0.3],[0.45,0.55],[0.44,0.78]],"8":[[0.42,0.98],[0.59,0.98],[0.58,0.58],[0.55,0.3],[0.5,0.08],[0.39,0.08],[0.41,0.3],[0.43,0.62]],"9":[[0.44,0.98],[0.58,0.98],[0.58,0.72],[0.54,0.48],[0.5,0.26],[0.45,0.08],[0.36,0.1],[0.39,0.32],[0.42,0.6]],"10":[[0.42,0.98],[0.58,0.98],[0.58,0.62],[0.55,0.32],[0.5,0.1],[0.39,0.09],[0.4,0.34],[0.43,0.65]],"11":[[0.4,0.98],[0.57,0.98],[0.58,0.72],[0.55,0.47],[0.51,0.25],[0.46,0.08],[0.36,0.1],[0.39,0.34],[0.42,0.65]],"12":[[0.42,0.98],[0.58,0.98],[0.59,0.73],[0.55,0.47],[0.52,0.25],[0.48,0.08],[0.39,0.09],[0.4,0.33],[0.43,0.62]],"13":[[0.42,0.98],[0.58,0.98],[0.59,0.72],[0.55,0.48],[0.51,0.25],[0.47,0.08],[0.37,0.09],[0.39,0.33],[0.42,0.64]],"14":[[0.43,0.98],[0.59,0.98],[0.58,0.67],[0.55,0.4],[0.51,0.15],[0.43,0.08],[0.37,0.12],[0.41,0.35],[0.43,0.7]],"15":[[0.45,0.98],[0.59,0.98],[0.59,0.7],[0.55,0.45],[0.52,0.24],[0.48,0.08],[0.38,0.1],[0.41,0.35],[0.44,0.67]],"16":[[0.43,0.98],[0.58,0.98],[0.59,0.72],[0.55,0.48],[0.52,0.25],[0.49,0.08],[0.39,0.09],[0.4,0.34],[0.43,0.63]],"17":[[0.42,0.98],[0.58,0.98],[0.58,0.72],[0.55,0.48],[0.51,0.25],[0.47,0.08],[0.37,0.09],[0.39,0.34],[0.42,0.64]],"18":[[0.43,0.98],[0.59,0.98],[0.59,0.7],[0.56,0.47],[0.52,0.24],[0.47,0.08],[0.37,0.1],[0.4,0.34],[0.43,0.66]]},"bunkers":{"1":[[[0.36,0.25],[0.43,0.2],[0.47,0.25],[0.45,0.31],[0.38,0.32]],[[0.55,0.08],[0.64,0.08],[0.66,0.15],[0.59,0.19],[0.54,0.16]]],"2":[[[0.32,0.14],[0.4,0.12],[0.43,0.18],[0.37,0.22],[0.31,0.2]],[[0.55,0.18],[0.64,0.18],[0.67,0.25],[0.6,0.29],[0.54,0.25]]],"3":[[[0.32,0.3],[0.38,0.26],[0.41,0.31],[0.38,0.36],[0.32,0.36]],[[0.55,0.17],[0.65,0.16],[0.68,0.22],[0.61,0.27],[0.55,0.25]]],"4":[[[0.31,0.25],[0.37,0.22],[0.4,0.28],[0.36,0.33],[0.3,0.31]],[[0.58,0.34],[0.66,0.31],[0.69,0.37],[0.64,0.42],[0.58,0.39]]],"5":[[[0.5,0.15],[0.57,0.13],[0.61,0.18],[0.58,0.23],[0.51,0.22]],[[0.34,0.33],[0.39,0.31],[0.42,0.36],[0.39,0.4],[0.34,0.39]]],"6":[[[0.34,0.19],[0.41,0.16],[0.44,0.22],[0.39,0.27],[0.34,0.25]],[[0.56,0.28],[0.64,0.25],[0.68,0.31],[0.62,0.35],[0.56,0.33]]],"7":[[[0.35,0.13],[0.42,0.1],[0.46,0.15],[0.42,0.2],[0.36,0.18]],[[0.56,0.23],[0.64,0.2],[0.68,0.26],[0.62,0.31],[0.56,0.29]]],"8":[[[0.34,0.1],[0.42,0.08],[0.45,0.14],[0.4,0.18],[0.34,0.16]],[[0.56,0.12],[0.64,0.1],[0.67,0.16],[0.61,0.2],[0.56,0.18]]],"9":[[[0.33,0.26],[0.4,0.22],[0.44,0.27],[0.4,0.33],[0.34,0.32]],[[0.55,0.18],[0.64,0.17],[0.68,0.23],[0.63,0.28],[0.56,0.26]]],"10":[[[0.55,0.17],[0.64,0.14],[0.68,0.2],[0.63,0.25],[0.56,0.23]],[[0.31,0.29],[0.37,0.27],[0.4,0.33],[0.36,0.37],[0.3,0.35]]],"11":[[[0.33,0.21],[0.4,0.19],[0.44,0.24],[0.4,0.29],[0.34,0.28]],[[0.55,0.14],[0.64,0.14],[0.68,0.2],[0.62,0.24],[0.55,0.22]]],"12":[[[0.34,0.22],[0.41,0.18],[0.45,0.23],[0.41,0.28],[0.35,0.27]],[[0.55,0.34],[0.64,0.31],[0.68,0.37],[0.62,0.42],[0.56,0.4]]],"13":[[[0.3,0.2],[0.37,0.17],[0.41,0.23],[0.37,0.28],[0.31,0.27]],[[0.56,0.12],[0.64,0.11],[0.68,0.17],[0.63,0.22],[0.56,0.2]]],"14":[[[0.54,0.17],[0.63,0.15],[0.67,0.21],[0.62,0.26],[0.55,0.24]]],"15":[[[0.34,0.21],[0.41,0.18],[0.45,0.24],[0.4,0.29],[0.34,0.27]],[[0.57,0.25],[0.65,0.22],[0.69,0.28],[0.63,0.33],[0.57,0.31]]],"16":[[[0.34,0.18],[0.41,0.15],[0.45,0.21],[0.4,0.26],[0.34,0.24]],[[0.56,0.25],[0.64,0.22],[0.68,0.28],[0.62,0.33],[0.56,0.31]]],"17":[[[0.33,0.2],[0.4,0.17],[0.44,0.22],[0.4,0.27],[0.34,0.25]],[[0.56,0.29],[0.64,0.26],[0.68,0.32],[0.62,0.37],[0.56,0.35]]],"18":[[[0.31,0.25],[0.38,0.22],[0.42,0.27],[0.38,0.32],[0.32,0.31]],[[0.55,0.16],[0.64,0.14],[0.68,0.2],[0.63,0.25],[0.56,0.23]]]},"defaults":{"1":"Mike","2":"Par 3","3":"Zach","4":"Zach","5":"Zach","6":"Mike","7":"Mike","8":"Par 3","9":"Mike","10":"Par 3","11":"Zach","12":"Mike","13":"Zach","14":"Par 3","15":"Mike","16":"Mike","17":"Mike","18":"Zach"},"initial":{"1":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"2":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"3":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"4":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"5":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"6":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"7":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"8":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"9":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"10":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"11":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"12":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"13":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"14":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"15":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"16":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"17":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}},"18":{"mike":{"x":0.5,"y":0.9},"zach":{"x":0.56,"y":0.9}}}};
+const holes = DATA.holes;
+const shotgun = [9,10,11,12,13,14,15,16,17,18,1,2,3,4,5,6,7,8];
+const state = structuredClone(DATA.initial);
+let current = 9;
+let dragging = null;
+
+const $ = id => document.getElementById(id);
+const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
+
+function pointInPoly(p, poly){
+  let inside=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i][0], yi=poly[i][1], xj=poly[j][0], yj=poly[j][1];
+    const hit=((yi>p[1])!==(yj>p[1])) &&
+      (p[0] < (xj-xi)*(p[1]-yi)/(yj-yi)+xi);
+    if(hit) inside=!inside;
+  }
+  return inside;
+}
+function distPointSeg(p,a,b){
+  const dx=b[0]-a[0], dy=b[1]-a[1];
+  if(dx===0&&dy===0)return Math.hypot(p[0]-a[0],p[1]-a[1]);
+  const t=clamp(((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(dx*dx+dy*dy),0,1);
+  return Math.hypot(p[0]-(a[0]+t*dx),p[1]-(a[1]+t*dy));
+}
+function polyDistance(p,poly){
+  let d=Infinity;
+  for(let i=0;i<poly.length;i++) d=Math.min(d,distPointSeg(p,poly[i],poly[(i+1)%poly.length]));
+  return d;
+}
+function lieFor(h, p){
+  const bunkers=DATA.bunkers[h]||[];
+  for(const poly of bunkers) if(pointInPoly(p,poly) || polyDistance(p,poly)<.012) return "bunker";
+  const fair=DATA.fairways[h];
+  if(pointInPoly(p,fair) || polyDistance(p,fair)<.025) return "fairway";
+  return "rough";
+}
+function remainingYards(h,p){
+  // The supplied images are oriented tee at the bottom and green toward the top.
+  // Use vertical position as a simple on-screen distance estimate.
+  return Math.max(25, Math.round(h.yds * p[1]));
+}
+function quality(lie){ return lie==="fairway"?0:lie==="rough"?18:60; }
+
+function recommendation(h){
+  if(h.par===3){
+    return {take:"PAR 3", text:"No tee-ball selection. Use the player with the more automatic stock club for the current wind, pin and trajectory.", override:false};
+  }
+  const m=state[h.h].mike, z=state[h.h].z;
+  const ml=lieFor(h.h,[m.x,m.y]), zl=lieFor(h.h,[z.x,z.y]);
+  const md=remainingYards(h,m), zd=remainingYards(h,z);
+
+  // If we take Mike's ball, Zach hits the second shot.
+  // If we take Zach's ball, Mike hits the second shot.
+  // Score proxy combines remaining distance, lie penalty, and the players' known strengths.
+  const mikeSecond = md + quality(ml)*0.85;
+  const zachSecond = zd + quality(zl)*0.55;
+  const takeMike = mikeSecond <= zachSecond;
+  const take=takeMike?"Mike":"Zach", hitter=takeMike?"Zach":"Mike";
+  const chosen=takeMike?m:z, chosenLie=takeMike?ml:zl, chosenY=takeMike?md:zd;
+  const normal=h.default;
+  const override = take !== normal;
+  let text=`Take ${take}'s ball. ${hitter} hits next from roughly ${chosenY} yards.`;
+  if(chosenLie==="bunker") text += " The bunker is a major penalty, so the other ball should be considered carefully.";
+  else if(chosenLie==="rough") text += " The rough costs some position, but the approach remains playable.";
+  else text += " The ball is in the fairway, preserving the cleanest next shot.";
+  return {take, text, override, ml,zl,md,zd};
+}
+
+function render(){
+  const h=holes.find(x=>x.h===current);
+  $("holeSelect").value=current;
+  $("holeTitle").textContent=`Hole ${h.h}`;
+  $("par").textContent=h.par;
+  $("yds").textContent=h.yds;
+  $("si").textContent=h.si;
+  $("holeNote").textContent=h.note;
+
+  $("holeImage").src=DATA.images[h.h-1];
+
+  for(const id of ["mike","zach"]){
+    const p=state[h.h][id];
+    $(id).style.left=(p.x*100)+"%";
+    $(id).style.top=(p.y*100)+"%";
+    const lie=lieFor(h.h,[p.x,p.y]);
+    const yards=remainingYards(h,p);
+    $(id+"Status").textContent=`${lie} • ~${yards} yd`;
+    $(id+"Status").className="lie "+lie;
+  }
+
+  const r=recommendation(h);
+  if(h.par===3){
+    $("recommend").innerHTML=`<div class="take">Play the par 3</div><p>${r.text}</p>`;
+  }else{
+    $("recommend").innerHTML=`<div class="take">TAKE ${r.take.toUpperCase()}'S BALL</div><p>${r.text}</p>`+
+      (r.override?`<div class="override"><b>Override:</b> The normal Hole ${h.h} plan is <b>${h.default}</b>, but the actual ball positions change the decision.</div>`:"");
+  }
+}
+
+function moveBall(id,e){
+  const rect=$("map").getBoundingClientRect();
+  state[current][id].x=clamp((e.clientX-rect.left)/rect.width,.02,.98);
+  state[current][id].y=clamp((e.clientY-rect.top)/rect.height,.02,.98);
+  render();
+}
+for(const id of ["mike","zach"]){
+  const el=$(id);
+  el.addEventListener("pointerdown",e=>{
+    dragging=id; el.setPointerCapture?.(e.pointerId); e.preventDefault(); e.stopPropagation();
+  });
+  el.addEventListener("pointermove",e=>{if(dragging===id) moveBall(id,e)});
+  el.addEventListener("pointerup",e=>{dragging=null; el.releasePointerCapture?.(e.pointerId)});
+  el.addEventListener("pointercancel",()=>dragging=null);
+}
+$("map").addEventListener("pointerdown",e=>{
+  if(e.target.closest(".ball")) return;
+  const rect=$("map").getBoundingClientRect();
+  const x=clamp((e.clientX-rect.left)/rect.width,.02,.98);
+  const y=clamp((e.clientY-rect.top)/rect.height,.02,.98);
+  const m=state[current].mike,z=state[current].z;
+  const target=Math.hypot(m.x-x,m.y-y)<=Math.hypot(z.x-x,z.y-y)?"mike":"zach";
+  state[current][target]={x,y};
+  render();
+});
+
+holes.forEach(h=>{
+  const o=document.createElement("option");
+  o.value=h.h; o.textContent=`Hole ${h.h} • Par ${h.par} • ${h.yds} yards`;
+  $("holeSelect").appendChild(o);
+});
+$("holeSelect").addEventListener("change",e=>{current=Number(e.target.value);render()});
+$("next").addEventListener("click",()=>{
+  current=shotgun[(shotgun.indexOf(current)+1)%shotgun.length];
+  render();
+});
+render();
+</script>
+</body>
+</html>
