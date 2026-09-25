@@ -16,7 +16,7 @@ body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system
 header{display:flex;justify-content:space-between;align-items:end;gap:16px;margin-bottom:14px}
 .brand{font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:var(--navy);font-size:12px}
 h1{margin:4px 0 0;font-family:Georgia,serif;font-size:30px;color:var(--navy)}
-.sub{font-size:12px;color:var(--muted);margin-top:4px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}.build-meta{font-size:9px;color:#8b8f89;margin-top:4px;letter-spacing:.05em;font-weight:800}
 .holebar{display:flex;gap:10px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:12px;margin-bottom:14px}
 select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;background:#fff;color:var(--navy);font-size:16px;font-weight:800;padding:0 12px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
@@ -75,7 +75,7 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
   header{flex:0 0 auto;margin:0 4px 7px;display:block}
   .brand{font-size:9px;line-height:1.1;color:#b08a45;letter-spacing:.14em}
   h1{font-size:27px;line-height:1;margin:2px 0 0;color:#102536;letter-spacing:-.02em}
-  header .sub{display:block;font-size:9px;color:#69736e;margin-top:3px}
+  header .sub{display:block;font-size:9px;color:#69736e;margin-top:3px}.build-meta{font-size:8px;margin-top:2px;color:#8b8f89}
   .holebar{flex:0 0 44px;height:44px;min-height:44px;margin:0 0 7px;padding:4px;background:#f7f5ef;border:1px solid #c9c2b5;border-radius:13px;box-shadow:0 2px 10px rgba(16,37,54,.06)}
   select{height:34px;font-size:14px;padding:0 10px;border:1px solid #c8c1b4;background:#fffefa;color:#102536;border-radius:9px}
   .layout{flex:1 1 auto;min-height:0;display:block;overflow:hidden}
@@ -121,7 +121,7 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
   <div>
     <div class="brand">Fieldstone Golf Club • Auburn Hills</div>
     <h1>Fieldstone Caddie</h1>
-    <div class="sub">Modified alternate shot • Caddie strategy for every tee ball.</div>
+    <div class="sub">Modified alternate shot • Caddie strategy for every tee ball.</div><div class="build-meta">v3.0 • Refreshed Sep 25, 2026</div>
   </div>
 </header>
 
@@ -275,24 +275,35 @@ function rgbToHsv(r,g,b){
 
 function classifyPixel(r,g,b){
   const [h,s,v]=rgbToHsv(r,g,b);
+  const H=h*360, S=s*100, V=v*100;
 
-  /* Sand/bunker: warm tan, relatively bright, red/green above blue.
-     This deliberately excludes near-white map graphics and yardage lines. */
+  /*
+     Fieldstone lie model:
+     - FAIRWAY is the distinctly LIGHT-GREEN mown grass.
+     - BUNKER is the bright TAN/CREAM sand.
+     - EVERYTHING ELSE is ROUGH.
+
+     The previous classifier used the wrong hue band. In these Fieldstone
+     aerials the light-green fairway is generally around 55-80 degrees, while
+     tan sand is much less saturated and brighter.
+  */
+
+  // Tan/cream bunker. Exclude near-white graphics and yardage lines.
   const bunker =
-    h>=8 && h<=32 &&
-    s>=15 && v>=140 &&
-    r>=g-2 && (g-b)>=8 && (r-b)>=18;
-
+    H>=42 && H<=62 &&
+    S>=8 && S<=30 &&
+    V>=64 && V<=94 &&
+    r>=g-12 && (r-b)>=22;
   if(bunker)return'bunker';
 
-  /* Fairway: the light green grass visible in the aerial. Darker/greyer
-     vegetation falls through to rough. */
+  // Light-green fairway. Dark/grey/olive grass is intentionally rough.
   const fairway =
-    h>=28 && h<=55 &&
-    s>=30 && v>=110 && v<225 &&
-    g>=r-2 && (g-b)>=18;
-
+    H>=54 && H<=82 &&
+    S>=20 && S<=58 &&
+    V>=42 && V<=82 &&
+    g>=r-5 && (g-b)>=22;
   if(fairway)return'fairway';
+
   return'rough';
 }
 
@@ -320,7 +331,7 @@ function sampleImageLie(n,p){
 
   const cx=Math.round(clamp(p[0],0,1)*(cache.width-1));
   const cy=Math.round(clamp(p[1],0,1)*(cache.height-1));
-  const radius=Math.max(6,Math.round(Math.min(cache.width,cache.height)*.012));
+  const radius=Math.max(4,Math.round(Math.min(cache.width,cache.height)*.007));
 
   let fair=0,rough=0,bunker=0,total=0;
   /* A small neighborhood is more reliable than one pixel, especially on
@@ -342,10 +353,10 @@ function sampleImageLie(n,p){
 
   /* Sand is visually distinctive, so it wins when a meaningful portion of
      the marker neighborhood is bunker. */
-  if(bunker/total>=0.22)return'bunker';
+  if(bunker/total>=0.25)return'bunker';
 
   /* Fairway needs a clear majority of light-green pixels. */
-  if(fair/total>=0.62)return'fairway';
+  if(fair/total>=0.55)return'fairway';
 
   return'rough';
 }
