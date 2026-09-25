@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Fieldstone Caddie • v3.1</title>
+<title>Fieldstone Caddie • v3.3</title>
 <style>
 :root{
   --navy:#10243b; --ink:#172231; --cream:#f5f2ea; --paper:#fffdf8;
@@ -24,10 +24,11 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
 .mapwrap{position:relative;background:#111;display:flex;justify-content:center;min-height:650px}
 .map{position:relative;width:min(100%,706px);aspect-ratio:706/1135;overflow:hidden;background:#111;touch-action:none}
 .map img{width:100%;height:100%;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
-.ball{position:absolute;width:25px;height:25px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.45);transform:translate(-50%,-50%);z-index:5;touch-action:none;cursor:grab}
+.ball{position:absolute;width:34px;height:34px;border-radius:50%;background:transparent!important;box-shadow:0 2px 8px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.35);transform:translate(-50%,-50%);z-index:5;touch-action:none;cursor:grab}
 .ball:active{cursor:grabbing}
-.ball.mike{background:var(--orange)}
-.ball.zach{background:var(--blue)}
+.ball.mike{border:4px solid #f4c542}
+.ball.zach{border:4px solid #2f72c9}
+.ball::after{content:"";position:absolute;inset:7px;border-radius:50%;background:rgba(255,255,255,.08);pointer-events:none}
 .ball span{position:absolute;top:-25px;left:50%;transform:translateX(-50%);background:rgba(16,36,59,.94);color:white;border-radius:999px;padding:3px 7px;font-size:10px;font-weight:900;white-space:nowrap}
 .instructions{padding:13px 16px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);background:#fbfaf5}
 .side{display:grid;gap:12px}
@@ -83,7 +84,9 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
   .mapwrap{height:100%;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#101719}
   .map{position:relative;width:100%;height:auto;max-height:100%;aspect-ratio:706/1135;overflow:hidden;background:#101719;touch-action:none;flex:0 0 auto}
   .map img{width:100%;height:100%;object-fit:cover}
-  .ball{width:26px;height:26px;border:3px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.38)}
+  .ball{width:34px;height:34px;box-shadow:0 2px 8px rgba(0,0,0,.38),0 0 0 1px rgba(255,255,255,.35)}
+  .ball.mike{border:4px solid #f4c542}
+  .ball.zach{border:4px solid #2f72c9}
   .ball span{font-size:10px;font-weight:800;padding:3px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
 
   /* Equal-size controls: same height, same width, same visual weight. */
@@ -121,7 +124,7 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
   <div>
     <div class="brand">Fieldstone Golf Club • Auburn Hills</div>
     <h1>Fieldstone Caddie</h1>
-    <div class="sub">Modified alternate shot • Caddie strategy for every tee ball.</div><div class="build-meta">v3.2 • Refreshed Sep 25, 2026</div>
+    <div class="sub">Modified alternate shot • Caddie strategy for every tee ball.</div><div class="build-meta">v3.3 • Refreshed Sep 25, 2026</div>
   </div>
 </header>
 
@@ -271,43 +274,36 @@ function rgbToHsv(r,g,b){
     h*=60;
     if(h<0)h+=360;
   }
-  const s=max===0?0:d/max;
-  return [h,s*255,max*255];
+  const sat=max===0?0:d/max;
+  return [h,sat*100,max*100];
 }
 
+/*
+  v3.3 lie engine:
+  The colored marker is now an OPEN circle, so the course pixel directly under
+  its center is the thing we classify. We do not sample the orange/blue marker.
+
+  The image is rendered with object-fit:cover, so normalized marker coordinates
+  are converted back into the image's true pixel coordinates before sampling.
+*/
 function classifyPixel(r,g,b){
   const [h,s,v]=rgbToHsv(r,g,b);
-  const H=h*360, S=s*100, V=v*100;
 
-  /*
-    Fieldstone rule: classify the ground immediately under the ball first.
-    The aerial is the source of truth:
-      • light green mown grass = FAIRWAY
-      • tan/cream sand = BUNKER
-      • everything else = ROUGH
-
-    These thresholds are intentionally broad. The final decision is made by
-    sampleImageLie(), which gives the center pixel much more weight and uses
-    the surrounding pixels only as verification.
-  */
-
-  // Tan/cream bunker. Include both tan sand and the pale cream sand visible
-  // in the Fieldstone aerials, but reject nearly colorless map/yardage graphics.
+  // Sand/bunker: tan/cream, low-to-moderate saturation, red >= green >= blue.
+  // Keep this deliberately broad because bunker lighting varies by hole.
   const bunker =
-    H>=35 && H<=68 &&
-    S>=7 && S<=55 &&
-    V>=48 && V<=100 &&
-    r>=g-18 && (r-b)>=18;
+    r>=g-4 && g>=b+5 &&
+    s<=32 && v>=58 &&
+    r>=150 && g>=140;
   if(bunker)return'bunker';
 
-  // Light-green mown fairway. Dark olive/blue-green rough and trees fall outside
-  // this band. Brightness is important because the fairway is visibly lighter.
+  // Fairway: light/medium green mown grass. The key signal is green dominance,
+  // not one narrow hue band. Dark trees and rough usually have much lower green
+  // dominance or substantially darker values.
   const fairway =
-    H>=50 && H<=92 &&
-    S>=18 && S<=58 &&
-    V>=48 && V<=90 &&
-    g>=r+5 &&
-    (g-b)>=18;
+    g>=r+5 && g>=b+18 &&
+    v>=38 && v<=92 &&
+    s>=15 && s<=72;
   if(fairway)return'fairway';
 
   return'rough';
@@ -331,63 +327,74 @@ function buildLieImage(n,img){
   }
 }
 
+function markerToImagePixel(p,cache){
+  const map=$('map');
+  if(!map || !cache)return null;
+  const rect=map.getBoundingClientRect();
+  const cw=rect.width, ch=rect.height;
+  const iw=cache.width, ih=cache.height;
+  if(!cw || !ch || !iw || !ih)return null;
+
+  // Reproduce CSS object-fit:cover exactly.
+  const scale=Math.max(cw/iw,ch/ih);
+  const renderedW=iw*scale, renderedH=ih*scale;
+  const offsetX=(cw-renderedW)/2;
+  const offsetY=(ch-renderedH)/2;
+  const displayX=clamp(p[0],0,1)*cw;
+  const displayY=clamp(p[1],0,1)*ch;
+  const sx=(displayX-offsetX)/scale;
+  const sy=(displayY-offsetY)/scale;
+
+  return {
+    x:Math.round(clamp(sx,0,iw-1)),
+    y:Math.round(clamp(sy,0,ih-1))
+  };
+}
+
 function sampleImageLie(n,p){
   const cache=IMAGE_LIE_CACHE[n];
   if(!cache)return null;
-
-  const cx=Math.round(clamp(p[0],0,1)*(cache.width-1));
-  const cy=Math.round(clamp(p[1],0,1)*(cache.height-1));
-
-  /*
-    Do NOT average a large patch. A marker can sit only a few pixels from a
-    fairway edge or bunker edge. The pixel directly underneath the ball is the
-    primary signal; the small neighborhood is only a confirmation check.
-  */
-  const getClass=(x,y)=>{
-    if(x<0||x>=cache.width||y<0||y>=cache.height)return'rough';
+  const point=markerToImagePixel(p,cache);
+  if(!point)return null;
+  const {x:cx,y:cy}=point;
+  const getRGB=(x,y)=>{
+    x=Math.max(0,Math.min(cache.width-1,x));
+    y=Math.max(0,Math.min(cache.height-1,y));
     const i=(y*cache.width+x)*4;
-    return classifyPixel(cache.data[i],cache.data[i+1],cache.data[i+2]);
+    return [cache.data[i],cache.data[i+1],cache.data[i+2]];
   };
+  const center=getRGB(cx,cy);
+  const centerClass=classifyPixel(...center);
 
-  const center=getClass(cx,cy);
-  const samples=[];
-  // Immediate 5x5 neighborhood. The center is deliberately represented many
-  // times so the decision cannot be pulled across a boundary by nearby grass.
-  for(let dy=-2;dy<=2;dy++){
-    for(let dx=-2;dx<=2;dx++){
-      const d=Math.abs(dx)+Math.abs(dy);
-      const weight=(dx===0&&dy===0)?8:(d<=1?3:(d===2?2:1));
-      samples.push({cls:getClass(cx+dx,cy+dy),weight});
+  // The center pixel gets the strongest vote. Surroundings only verify the lie.
+  const radius=3;
+  let fair=0,bunker=0,rough=0,total=0;
+  let greenVotes=0,sandVotes=0;
+  for(let dy=-radius;dy<=radius;dy++){
+    for(let dx=-radius;dx<=radius;dx++){
+      const d=Math.hypot(dx,dy);
+      if(d>radius)continue;
+      const cls=classifyPixel(...getRGB(cx+dx,cy+dy));
+      const w=(dx===0&&dy===0)?16:(d<=1.5?4:(d<=2.5?2:1));
+      total+=w;
+      if(cls==='fairway'){fair+=w;greenVotes++;}
+      else if(cls==='bunker'){bunker+=w;sandVotes++;}
+      else rough+=w;
     }
   }
 
-  let fair=0,bunker=0,total=0;
-  for(const s of samples){
-    total+=s.weight;
-    if(s.cls==='fairway')fair+=s.weight;
-    if(s.cls==='bunker')bunker+=s.weight;
-  }
-
-  if(!total)return'rough';
-
   const fairRatio=fair/total, bunkerRatio=bunker/total;
 
-  // If the center pixel is bunker, only a small amount of surrounding sand is
-  // needed to verify it. This handles narrow bunkers correctly.
-  if(center==='bunker' && bunkerRatio>=0.12)return'bunker';
+  // Center pixel is authoritative when its neighborhood agrees even modestly.
+  if(centerClass==='bunker' && bunkerRatio>=0.10)return'bunker';
+  if(centerClass==='fairway' && fairRatio>=0.15)return'fairway';
 
-  // Likewise, a center fairway pixel wins when nearby pixels confirm the same
-  // surface. This prevents rough on the edge from overwhelming the ball's lie.
-  if(center==='fairway' && fairRatio>=0.20)return'fairway';
-
-  // If the exact center lands on a compression artifact, allow a strong local
-  // consensus to resolve it. Bunker gets priority over fairway.
-  if(bunkerRatio>=0.35)return'bunker';
+  // If the exact center is a compression/blending pixel, use a strong local vote.
+  if(bunkerRatio>=0.40)return'bunker';
   if(fairRatio>=0.55)return'fairway';
 
   return'rough';
 }
-
 function lie(n,p){
   /* The aerial image is the ONLY source of truth for lie.
      Never fall back to the old hand-drawn polygons: they are approximate and
