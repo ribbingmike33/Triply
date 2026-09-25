@@ -22,7 +22,7 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:16px;align-items:start}
 .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(16,36,59,.07)}
 .mapwrap{position:relative;background:#111;display:flex;justify-content:center;min-height:650px}
-.map{position:relative;width:min(100%,706px);aspect-ratio:706/1135;overflow:hidden;background:#111}
+.map{position:relative;width:min(100%,706px);aspect-ratio:706/1135;overflow:hidden;background:#111;touch-action:none}
 .map img{width:100%;height:100%;display:block;object-fit:cover;user-select:none;-webkit-user-drag:none}
 .ball{position:absolute;width:25px;height:25px;border-radius:50%;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.45);transform:translate(-50%,-50%);z-index:5;touch-action:none;cursor:grab}
 .ball:active{cursor:grabbing}
@@ -63,6 +63,141 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
  .mapwrap{min-height:0}.map{width:100%}
  .side{display:block}.panel{margin-top:10px}
 }
+
+/* ---------- MOBILE COCKPIT LAYOUT ----------
+   Keep the map, caddie button, and recommendation on-screen together.
+   The page itself does not scroll on a phone; only the aerial is touch-active.
+*/
+@media(max-width:850px){
+  html,body{height:100%;overflow:hidden}
+  body{overscroll-behavior:none}
+  .app{
+    height:100dvh;
+    max-height:100dvh;
+    padding:7px 8px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+  }
+  header{
+    flex:0 0 auto;
+    margin:0 2px 6px;
+    display:block;
+  }
+  .brand{font-size:9px;line-height:1.1}
+  h1{font-size:20px;line-height:1.05;margin:2px 0 0}
+  header .sub{display:none}
+  .holebar{
+    flex:0 0 42px;
+    height:42px;
+    min-height:42px;
+    margin:0 0 6px;
+    padding:4px;
+    border-radius:11px;
+  }
+  select{height:32px;font-size:14px;padding:0 9px}
+  .layout{
+    flex:1 1 auto;
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:minmax(0,1fr) auto;
+    gap:6px;
+    overflow:hidden;
+  }
+  .card{
+    min-height:0;
+    height:100%;
+    border-radius:14px;
+  }
+  .mapwrap{
+    min-height:0;
+    height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    overflow:hidden;
+  }
+  .map{
+    width:auto;
+    height:100%;
+    max-width:100%;
+    aspect-ratio:706/1135;
+    flex:0 0 auto;
+  }
+  .map img{object-fit:contain}
+  .ball{width:24px;height:24px}
+  .instructions{
+    position:absolute;
+    left:0;right:0;bottom:0;
+    padding:5px 8px;
+    min-height:27px;
+    font-size:9px;
+    line-height:1.2;
+    background:rgba(251,250,245,.94);
+    border-top:1px solid rgba(221,216,204,.95);
+    z-index:7;
+  }
+  .side{
+    min-height:0;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    grid-template-rows:72px minmax(170px,190px);
+    gap:6px;
+    overflow:hidden;
+  }
+  .side .panel:first-child{
+    padding:7px 9px;
+    border-radius:11px;
+  }
+  .side .panel:first-child .kicker{font-size:8px}
+  .holetitle{font-size:17px;margin:0 0 4px}
+  .stats{grid-template-columns:repeat(3,1fr);gap:4px}
+  .stat{padding:4px 5px;border-radius:7px}
+  .stat b{font-size:12px}
+  .stat span{font-size:7px}
+  .status{grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
+  .statusrow{grid-template-columns:13px 34px 1fr;gap:4px;font-size:10px}
+  .dot{width:9px;height:9px}
+  .legend{display:none}
+  .side .panel:nth-child(2){
+    padding:7px 9px;
+    border-radius:11px;
+    min-height:0;
+  }
+  .side .panel:nth-child(2) .kicker{font-size:8px}
+  .recommend{
+    padding:6px 8px;
+    border-radius:9px;
+    max-height:132px;
+    overflow:hidden;
+  }
+  .recommend .take{font-size:17px;line-height:1.05;margin:0 0 3px}
+  .recommend p{font-size:10px;line-height:1.25}
+  .recommend .override{margin-top:4px;padding-top:4px;font-size:9px;line-height:1.2}
+  .generate{
+    height:36px;
+    margin-top:5px;
+    font-size:12px;
+    border-radius:8px;
+  }
+  .side .panel:nth-child(3){display:none}
+  .next{
+    position:absolute;
+    right:12px;
+    top:58px;
+    width:auto;
+    height:30px;
+    padding:0 9px;
+    border-radius:8px;
+    font-size:10px;
+    z-index:20;
+  }
+}
+@media(min-width:851px){
+  /* Keep the desktop experience unchanged. */
+}
+
 </style>
 </head>
 <body>
