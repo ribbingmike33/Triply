@@ -64,135 +64,49 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
  .side{display:block}.panel{margin-top:10px}
 }
 
-/* ---------- MOBILE COCKPIT LAYOUT ----------
-   Keep the map, caddie button, and recommendation on-screen together.
-   The page itself does not scroll on a phone; only the aerial is touch-active.
+/* ---------- MOBILE MAP COCKPIT ----------
+   Large aerial with controls layered over the image so the map stays large.
 */
 @media(max-width:850px){
   html,body{height:100%;overflow:hidden}
   body{overscroll-behavior:none}
   .app{
-    height:100dvh;
-    max-height:100dvh;
-    padding:7px 8px;
-    display:flex;
-    flex-direction:column;
-    overflow:hidden;
+    height:100dvh;max-height:100dvh;padding:8px 8px 10px;
+    display:flex;flex-direction:column;overflow:hidden;
   }
-  header{
-    flex:0 0 auto;
-    margin:0 2px 6px;
-    display:block;
-  }
+  header{flex:0 0 auto;margin:0 3px 6px;display:block}
   .brand{font-size:9px;line-height:1.1}
-  h1{font-size:20px;line-height:1.05;margin:2px 0 0}
+  h1{font-size:24px;line-height:1.04;margin:2px 0 0}
   header .sub{display:none}
-  .holebar{
-    flex:0 0 42px;
-    height:42px;
-    min-height:42px;
-    margin:0 0 6px;
-    padding:4px;
-    border-radius:11px;
-  }
+  .holebar{flex:0 0 42px;height:42px;min-height:42px;margin:0 0 6px;padding:4px;border-radius:11px}
   select{height:32px;font-size:14px;padding:0 9px}
-  .layout{
-    flex:1 1 auto;
-    min-height:0;
-    display:grid;
-    grid-template-columns:minmax(0,1fr);
-    grid-template-rows:minmax(0,1fr) auto;
-    gap:6px;
-    overflow:hidden;
-  }
-  .card{
-    min-height:0;
-    height:100%;
-    border-radius:14px;
-  }
-  .mapwrap{
-    min-height:0;
-    height:100%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    overflow:hidden;
-  }
-  .map{
-    width:auto;
-    height:100%;
-    max-width:100%;
-    aspect-ratio:706/1135;
-    flex:0 0 auto;
-  }
-  .map img{object-fit:contain}
-  .ball{width:24px;height:24px}
-  .instructions{
-    position:absolute;
-    left:0;right:0;bottom:0;
-    padding:5px 8px;
-    min-height:27px;
-    font-size:9px;
-    line-height:1.2;
-    background:rgba(251,250,245,.94);
-    border-top:1px solid rgba(221,216,204,.95);
-    z-index:7;
-  }
-  .side{
-    min-height:0;
-    display:grid;
-    grid-template-columns:minmax(0,1fr);
-    grid-template-rows:72px minmax(170px,190px);
-    gap:6px;
-    overflow:hidden;
-  }
-  .side .panel:first-child{
-    padding:7px 9px;
-    border-radius:11px;
-  }
-  .side .panel:first-child .kicker{font-size:8px}
-  .holetitle{font-size:17px;margin:0 0 4px}
-  .stats{grid-template-columns:repeat(3,1fr);gap:4px}
-  .stat{padding:4px 5px;border-radius:7px}
-  .stat b{font-size:12px}
-  .stat span{font-size:7px}
-  .status{grid-template-columns:1fr 1fr;gap:5px;margin-top:5px}
-  .statusrow{grid-template-columns:13px 34px 1fr;gap:4px;font-size:10px}
-  .dot{width:9px;height:9px}
-  .legend{display:none}
-  .side .panel:nth-child(2){
-    padding:7px 9px;
-    border-radius:11px;
-    min-height:0;
-  }
-  .side .panel:nth-child(2) .kicker{font-size:8px}
-  .recommend{
-    padding:6px 8px;
-    border-radius:9px;
-    max-height:132px;
-    overflow:hidden;
-  }
-  .recommend .take{font-size:17px;line-height:1.05;margin:0 0 3px}
-  .recommend p{font-size:10px;line-height:1.25}
-  .recommend .override{margin-top:4px;padding-top:4px;font-size:9px;line-height:1.2}
-  .generate{
-    height:36px;
-    margin-top:5px;
-    font-size:12px;
-    border-radius:8px;
-  }
-  .side .panel:nth-child(3){display:none}
-  .next{
-    position:absolute;
-    right:12px;
-    top:58px;
-    width:auto;
-    height:30px;
-    padding:0 9px;
-    border-radius:8px;
-    font-size:10px;
-    z-index:20;
-  }
+
+  .layout{flex:1 1 auto;min-height:0;display:block;overflow:hidden}
+  .card{height:100%;min-height:0;border-radius:16px;overflow:hidden}
+  .mapwrap{height:100%;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#111}
+  .map{position:relative;width:100%;height:auto;max-height:100%;aspect-ratio:706/1135;overflow:hidden;background:#111;touch-action:none;flex:0 0 auto}
+  .map img{width:100%;height:100%;object-fit:cover}
+  .ball{width:26px;height:26px}
+
+  /* The button floats over the top of the aerial. */
+  .map-controls{position:absolute;left:10px;right:82px;top:10px;z-index:20;pointer-events:none}
+  .map-controls .generate{pointer-events:auto;width:100%;height:44px;margin:0;border-radius:11px;background:var(--green);box-shadow:0 3px 12px rgba(0,0,0,.28);font-size:13px}
+  .distance-strip{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:7px;pointer-events:none}
+  .distance-pill{background:rgba(16,36,59,.9);color:#fff;border-radius:9px;padding:6px 9px;box-shadow:0 2px 9px rgba(0,0,0,.25);font-size:11px;font-weight:800;line-height:1.15;text-align:center}
+  .distance-pill .label{font-size:9px;opacity:.72;text-transform:uppercase;letter-spacing:.06em;margin-right:4px}
+
+  /* Recommendation appears on top of the aerial, never below it. */
+  .recommend-overlay{position:absolute;left:10px;right:10px;bottom:10px;z-index:19;pointer-events:none;display:none}
+  .recommend-overlay.visible{display:block}
+  .recommend-overlay .recommend{pointer-events:auto;max-height:min(43%,270px);overflow:auto;padding:11px 12px;border-radius:13px;background:rgba(255,253,248,.96);border:1px solid rgba(255,255,255,.9);box-shadow:0 5px 22px rgba(0,0,0,.3);backdrop-filter:blur(5px)}
+  .recommend-overlay .recommend .take{font-size:21px;line-height:1.05;margin:0 0 5px}
+  .recommend-overlay .recommend p{font-size:12px;line-height:1.35}
+  .recommend-overlay .recommend .override{margin-top:7px;padding-top:7px;font-size:10px;line-height:1.3}
+
+  /* Keep the existing markers draggable only from the marker itself. */
+  .instructions{position:absolute;left:8px;right:8px;bottom:8px;z-index:10;padding:5px 8px;min-height:0;font-size:9px;line-height:1.2;background:rgba(251,250,245,.88);border:1px solid rgba(221,216,204,.8);border-radius:8px;pointer-events:none}
+  .side{display:none}
+  .next{position:absolute;right:10px;top:10px;width:auto;height:36px;padding:0 10px;border-radius:9px;font-size:11px;z-index:25;box-shadow:0 3px 10px rgba(0,0,0,.25)}
 }
 @media(min-width:851px){
   /* Keep the desktop experience unchanged. */
@@ -219,12 +133,23 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
     <div class="mapwrap">
       <div class="map" id="map">
         <img id="holeImage" alt="Fieldstone hole aerial layout">
+        <div class="map-controls">
+          <button type="button" class="generate" id="generate">Generate Caddie Recommendation</button>
+          <div class="distance-strip">
+            <div class="distance-pill" id="mikeDistance"><span class="label">Mike</span>—</div>
+            <div class="distance-pill" id="zachDistance"><span class="label">Zach</span>—</div>
+          </div>
+        </div>
+        <div class="recommend-overlay" id="recommendOverlay">
+          <div class="recommend" id="recommend"></div>
+        </div>
         <div class="ball mike" id="mike"><span>Mike</span></div>
         <div class="ball zach" id="zach"><span>Zach</span></div>
       </div>
-    </div>
-    <div class="instructions">
-      <b>Only the balls move.</b> Touch and drag the orange or blue marker. Tapping anywhere else on the aerial will not move a shot.
+      <div class="instructions">
+        <b>Only the balls move.</b> Touch and drag the orange or blue marker. Tapping anywhere else on the aerial will not move a shot.
+      </div>
+      <button class="next" id="next">Next hole →</button>
     </div>
   </section>
 
@@ -246,8 +171,8 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
 
     <div class="panel">
       <div class="kicker">Caddie recommendation</div>
-      <div class="recommend" id="recommend"></div>
-      <button type="button" class="generate" id="generate">Generate Caddie Recommendation</button>
+      <div class="recommend" id="recommendDesktop"></div>
+      <button type="button" class="generate" id="generateDesktop">Generate Caddie Recommendation</button>
     </div>
 
     <div class="panel">
@@ -255,7 +180,6 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
       <div class="note" id="holeNote"></div>
     </div>
 
-    <button class="next" id="next">Next hole →</button>
   </aside>
 </div>
 </div>
@@ -339,7 +263,27 @@ function status(id){
   const el=$(id+'Status');
   if(el){el.textContent=`${l.toUpperCase()} • ~${y} YDS TO HOLE`;el.className='lie '+l;}
 }
+function setRecommendationHTML(html){
+  const mobile=$('recommend');
+  const desktop=$('recommendDesktop');
+  if(mobile)mobile.innerHTML=html;
+  if(desktop)desktop.innerHTML=html;
+}
+function showRecommendationOverlay(show){
+  const ov=$('recommendOverlay');
+  if(ov)ov.classList.toggle('visible',!!show);
+}
+function updateDistancePills(){
+  for(const id of['mike','zach']){
+    const p=state[current][id];
+    const y=estimatedYards(current,p);
+    const l=lie(current,[p.x,p.y]);
+    const el=$(id+'Distance');
+    if(el)el.innerHTML=`<span class="label">${id==='mike'?'Mike':'Zach'}</span>${y} YDS • ${l.toUpperCase()}`;
+  }
+}
 function render(){
+  showRecommendationOverlay(false);
   const h=byHole[current];
   if($('holeSelect'))$('holeSelect').value=String(current);
   if($('holeTitle'))$('holeTitle').textContent=`Hole ${current}`;
@@ -353,7 +297,7 @@ function render(){
     if(el){el.style.left=p.x*100+'%';el.style.top=p.y*100+'%';}
     status(id);
   }
-  if($('recommend'))$('recommend').innerHTML=`<div class="take" style="font-size:18px">PLACE BOTH TEE BALLS</div><p>Move either marker. The app will compare distance <b>and lie</b>, then tell you which ball to take and how to play the approach.</p>`;
+  setRecommendationHTML(`<div class="take" style="font-size:18px">PLACE BOTH TEE BALLS</div><p>Move either marker. The app will compare distance <b>and lie</b>, then tell you which ball to take and how to play the approach.</p>`); updateDistancePills();
 }
 function moveBall(id,e){
   const map=$('map');if(!map)return;
@@ -484,10 +428,9 @@ function generateRecommendation(){
   try{
     const h=byHole[current];
     if(!h){throw new Error('Current hole not found');}
-    const box=$('recommend');
-    if(!box)throw new Error('Recommendation box not found');
+    showRecommendationOverlay(true);
     if(h.par===3){
-      box.innerHTML=`<div class="take">PLAY THE PAR 3</div><p>${h.note||'Use the player with the most automatic stock club for the wind and pin.'}</p><div class="override"><b>CADDIE TIP</b> — Play for the safest part of the green. Do not chase a tucked pin unless the miss is clearly safe.</div>`;
+      setRecommendationHTML(`<div class="take">PLAY THE PAR 3</div><p>${h.note||'Use the player with the most automatic stock club for the wind and pin.'}</p><div class="override"><b>CADDIE TIP</b> — Play for the safest part of the green. Do not chase a tucked pin unless the miss is clearly safe.</div>`);
       return;
     }
     const mike=candidate('Mike',h),zach=candidate('Zach',h);
@@ -502,27 +445,29 @@ function generateRecommendation(){
     else if(chosen.y+15<other.y)why=`${chosen.player}'s ball leaves about ${other.y-chosen.y} fewer yards for the next shot.`;
     else why=`The approach profile is slightly easier from ${chosen.player}'s ball.`;
     const confidence=margin>=30?'clear':margin>=12?'meaningful':'close';
-    box.innerHTML=`<div class="take">TAKE ${chosen.player.toUpperCase()}'S BALL</div>
+    setRecommendationHTML(`<div class="take">TAKE ${chosen.player.toUpperCase()}'S BALL</div>
       <p><b>${chosen.next}</b> hits next from approximately <b>${chosen.y} yards</b>, from the <b>${chosen.li}</b>.</p>
       <div class="override"><b>${override?'OVERRIDE':'NORMAL PLAN'}</b> — ${why} ${confidence==='close'?'This is a close call; favor the cleaner lie if conditions look different in person.':''}</div>
       <div class="override"><b>APPROACH CADDIE TIP</b> — ${approachTip(chosen,h)}</div>
-      <div class="override"><b>HOLE PLAN</b> — ${holeSpecificTip(chosen,h)}</div>`;
+      <div class="override"><b>HOLE PLAN</b> — ${holeSpecificTip(chosen,h)}</div>`);
   }catch(err){
     console.error(err);
-    const box=$('recommend');
-    if(box)box.innerHTML=`<div class="take">CADDIE ENGINE ERROR</div><p>Refresh the page and try again. ${err.message||''}</p>`;
+    showRecommendationOverlay(true);
+    setRecommendationHTML(`<div class="take">CADDIE ENGINE ERROR</div><p>Refresh the page and try again. ${err.message||''}</p>`);
   }
 }
 window.generateRecommendation=generateRecommendation;
 
-/* Bind the button once, after the DOM exists. Remove the inline handler too. */
-const generateButton=$('generate');
-if(generateButton){
-  generateButton.addEventListener('click',function(e){
-    e.preventDefault();
-    e.stopPropagation();
-    generateRecommendation();
-  });
+/* Bind both desktop and mobile buttons. */
+for(const buttonId of ['generate','generateDesktop']){
+  const generateButton=$(buttonId);
+  if(generateButton){
+    generateButton.addEventListener('click',function(e){
+      e.preventDefault();
+      e.stopPropagation();
+      generateRecommendation();
+    });
+  }
 }
 
 if($('holeSelect')){
