@@ -246,7 +246,115 @@ function distSeg(p,a,b){
   return Math.hypot(p[0]-(a[0]+t*dx),p[1]-(a[1]+t*dy));
 }
 function polyDist(p,poly){let d=Infinity;for(let i=0;i<poly.length;i++)d=Math.min(d,distSeg(p,poly[i],poly[(i+1)%poly.length]));return d;}
+/* ---------- IMAGE-BASED LIE CLASSIFICATION ----------
+   The aerial itself is the source of truth:
+   - light green = fairway
+   - tan/white sand = bunker
+   - everything else = rough
+
+   We sample the actual course pixels underneath the marker rather than using
+   hand-drawn polygons. This keeps the classification aligned with what the
+   player sees on the map and works independently for every hole image.
+*/
+const IMAGE_LIE_CACHE={};
+
+function rgbToHsv(r,g,b){
+  r/=255; g/=255; b/=255;
+  const max=Math.max(r,g,b), min=Math.min(r,g,b), d=max-min;
+  let h=0;
+  if(d){
+    if(max===r) h=((g-b)/d)%6;
+    else if(max===g) h=(b-r)/d+2;
+    else h=(r-g)/d+4;
+    h*=60;
+    if(h<0)h+=360;
+  }
+  const s=max===0?0:d/max;
+  return [h,s*255,max*255];
+}
+
+function classifyPixel(r,g,b){
+  const [h,s,v]=rgbToHsv(r,g,b);
+
+  /* Sand/bunker: warm tan, relatively bright, red/green above blue.
+     This deliberately excludes near-white map graphics and yardage lines. */
+  const bunker =
+    h>=8 && h<=32 &&
+    s>=15 && v>=140 &&
+    r>=g-2 && (g-b)>=8 && (r-b)>=18;
+
+  if(bunker)return'bunker';
+
+  /* Fairway: the light green grass visible in the aerial. Darker/greyer
+     vegetation falls through to rough. */
+  const fairway =
+    h>=28 && h<=55 &&
+    s>=30 && v>=110 && v<225 &&
+    g>=r-2 && (g-b)>=18;
+
+  if(fairway)return'fairway';
+  return'rough';
+}
+
+function buildLieImage(n,img){
+  try{
+    if(!img || !img.naturalWidth || !img.naturalHeight)return;
+    const c=document.createElement('canvas');
+    c.width=img.naturalWidth;
+    c.height=img.naturalHeight;
+    const ctx=c.getContext('2d',{willReadFrequently:true});
+    ctx.drawImage(img,0,0);
+    IMAGE_LIE_CACHE[n]={
+      width:c.width,
+      height:c.height,
+      data:ctx.getImageData(0,0,c.width,c.height).data
+    };
+  }catch(err){
+    console.warn('Could not read course image for lie classification',n,err);
+  }
+}
+
+function sampleImageLie(n,p){
+  const cache=IMAGE_LIE_CACHE[n];
+  if(!cache)return null;
+
+  const cx=Math.round(clamp(p[0],0,1)*(cache.width-1));
+  const cy=Math.round(clamp(p[1],0,1)*(cache.height-1));
+  const radius=Math.max(6,Math.round(Math.min(cache.width,cache.height)*.012));
+
+  let fair=0,rough=0,bunker=0,total=0;
+  /* A small neighborhood is more reliable than one pixel, especially on
+     mown stripes, image compression, and the white course overlays. */
+  for(let yy=cy-radius;yy<=cy+radius;yy++){
+    if(yy<0||yy>=cache.height)continue;
+    for(let xx=cx-radius;xx<=cx+radius;xx++){
+      if(xx<0||xx>=cache.width)continue;
+      const i=(yy*cache.width+xx)*4;
+      const cls=classifyPixel(cache.data[i],cache.data[i+1],cache.data[i+2]);
+      if(cls==='fairway')fair++;
+      else if(cls==='bunker')bunker++;
+      else rough++;
+      total++;
+    }
+  }
+
+  if(!total)return'rough';
+
+  /* Sand is visually distinctive, so it wins when a meaningful portion of
+     the marker neighborhood is bunker. */
+  if(bunker/total>=0.22)return'bunker';
+
+  /* Fairway needs a clear majority of light-green pixels. */
+  if(fair/total>=0.62)return'fairway';
+
+  return'rough';
+}
+
 function lie(n,p){
+  const imageLie=sampleImageLie(n,p);
+  if(imageLie)return imageLie;
+
+  /* Fallback only while an image is still loading. */
   const bs=DATA.bunkers?.[n]||[];
   for(const q of bs)if(pointInPoly(p,q)||polyDist(p,q)<.014)return'bunker';
   const f=DATA.fairways?.[n];
@@ -294,7 +402,15 @@ function render(){
   if($('yds'))$('yds').textContent=h.yds;
   if($('si'))$('si').textContent=h.si;
   if($('holeNote'))$('holeNote').textContent=h.note||'';
-  if($('holeImage'))$('holeImage').src=imageForHole(current);
+  const img=$('holeImage');
+  if(img){
+    const src=imageForHole(current);
+    if(img.dataset.hole!==String(current)){
+      img.dataset.hole=String(current);
+      img.src=src;
+    }
+    if(img.complete && img.naturalWidth)buildLieImage(current,img);
+  }
   for(const id of['mike','zach']){
     const p=state[current][id],el=$(id);
     if(el){el.style.left=p.x*100+'%';el.style.top=p.y*100+'%';}
@@ -498,6 +614,19 @@ function generateRecommendation(){
   }
 }
 window.generateRecommendation=generateRecommendation;
+
+/* Read the actual aerial once it has loaded, then immediately refresh the
+   distance/lie displays using the image-based classifier. */
+if($('holeImage')){
+  $('holeImage').addEventListener('load',function(){
+    const n=Number(this.dataset.hole||current);
+    buildLieImage(n,this);
+    if(n===current){
+      for(const id of['mike','zach'])status(id);
+      updateDistancePills();
+    }
+  });
+}
 
 /* Bind both desktop and mobile buttons. */
 for(const buttonId of ['generate','generateDesktop']){
