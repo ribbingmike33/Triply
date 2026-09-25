@@ -224,7 +224,7 @@ select{width:100%;height:48px;border:1px solid #cfc9bc;border-radius:10px;backgr
       </div>
     </div>
     <div class="instructions">
-      <b>Drag the balls directly onto the aerial.</b> Orange = Mike • Blue = Zach. The app classifies the landing spot as fairway, rough, or bunker. Tap empty map space to move the nearer ball.
+      <b>Only the balls move.</b> Touch and drag the orange or blue marker. Tapping anywhere else on the aerial will not move a shot.
     </div>
   </section>
 
@@ -364,19 +364,32 @@ function moveBall(id,e){
 }
 for(const id of['mike','zach']){
   const el=$(id);if(!el)continue;
-  el.addEventListener('pointerdown',e=>{dragging=id;try{el.setPointerCapture(e.pointerId)}catch(_){ }e.preventDefault();e.stopPropagation();});
-  el.addEventListener('pointermove',e=>{if(dragging===id)moveBall(id,e);});
-  el.addEventListener('pointerup',()=>dragging=null);
-  el.addEventListener('pointercancel',()=>dragging=null);
+  el.addEventListener('pointerdown',e=>{
+    // A shot can ONLY be moved by starting the gesture on its own marker.
+    // Tapping or dragging anywhere else on the aerial does nothing.
+    dragging=id;
+    try{el.setPointerCapture(e.pointerId)}catch(_){}
+    e.preventDefault();
+    e.stopPropagation();
+  });
+  el.addEventListener('pointermove',e=>{
+    if(dragging===id){
+      e.preventDefault();
+      moveBall(id,e);
+    }
+  });
+  const stopDrag=e=>{
+    if(dragging===id){
+      dragging=null;
+      try{if(e && el.hasPointerCapture(e.pointerId))el.releasePointerCapture(e.pointerId)}catch(_){}
+    }
+  };
+  el.addEventListener('pointerup',stopDrag);
+  el.addEventListener('pointercancel',stopDrag);
+  el.addEventListener('lostpointercapture',()=>{if(dragging===id)dragging=null;});
 }
-if($('map'))$('map').addEventListener('pointerdown',e=>{
-  if(e.target.closest('.ball'))return;
-  const r=$('map').getBoundingClientRect();
-  const p={x:clamp((e.clientX-r.left)/r.width,.015,.985),y:clamp((e.clientY-r.top)/r.height,.015,.985)};
-  const m=state[current].mike,z=state[current].zach;
-  const id=Math.hypot(m.x-p.x,m.y-p.y)<=Math.hypot(z.x-p.x,z.y-p.y)?'mike':'zach';
-  state[current][id]=p;render();
-});
+// Deliberately NO pointerdown handler on #map. Empty-map taps never move a shot.
+
 
 /* ---------- CADDIE ENGINE ----------
    The selected tee ball is the ball that leaves the OTHER player the approach.
